@@ -1,0 +1,11 @@
+$:
+  vscode:
+    - docker:
+        image: docker.cnb.cool/zhxycn/env:latest
+      services:
+        - vscode
+        - docker
+      imports:
+        - https://cnb.cool/TokenTeam/secrets/-/blob/main/expo.yml
+      env:
+        CNB_WELCOME_EXECUTE_COMMAND: bash scripts/build-android.sh development

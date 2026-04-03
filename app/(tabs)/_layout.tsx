@@ -1,9 +1,9 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
+import { Tabs } from "expo-router";
+import React from "react";
 
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { IconSymbol } from "@/components/ui/icon-symbol";
+import { Colors } from "@/constants/theme";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -11,28 +11,45 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+        tabBarActiveTintColor:
+          Colors[colorScheme === "dark" ? "dark" : "light"].tint,
         headerShown: false,
-      }}>
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
-          title: '课程',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="calendar.circle.fill" color={color} />,
+          title: "首页",
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="home" color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="course"
+        options={{
+          title: "课程",
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="event" color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="function"
         options={{
-          title: '功能',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="square.grid.3x3" color={color} />,
+          title: "功能",
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="apps" color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="user"
         options={{
-          title: '我的',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="person.fill" color={color} />,
+          title: "我的",
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="person" color={color} />
+          ),
         }}
       />
     </Tabs>
