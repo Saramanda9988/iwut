@@ -6,6 +6,7 @@ import {
   Modal,
   Platform,
   Pressable,
+  ScrollView,
   Text,
   TextInput,
   View,
@@ -13,78 +14,243 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { IS_DEV } from "@/constants/is-dev";
+import { useColorScheme } from "@/hooks/use-color-scheme";
+
+type WebApp = {
+  icon: React.ComponentProps<typeof Ionicons>["name"];
+  label: string;
+  color: string;
+  uri: string;
+};
+
+type Section = {
+  title: string;
+  items: WebApp[];
+};
+
+const SECTIONS: Section[] = [
+  {
+    title: "学习工具",
+    items: [
+      {
+        icon: "book-outline",
+        label: "自习室查询",
+        color: "#0d9488",
+        uri: "https://classroom-iwut.tokenteam.net",
+      },
+      {
+        icon: "school-outline",
+        label: "教务系统",
+        color: "#8b5cf6",
+        uri: "https://zhlgd.whut.edu.cn/tpass/login?service=https%3A%2F%2Fjwxt.whut.edu.cn%2Fjwapp%2Fsys%2Fhomeapp%2Findex.do%3FforceCas%3D1",
+      },
+      {
+        icon: "library-outline",
+        label: "图书馆管家",
+        color: "#3b82f6",
+        uri: "https://library-info-iwut.tokenteam.net",
+      },
+    ],
+  },
+  {
+    title: "生活服务",
+    items: [
+      {
+        icon: "card-outline",
+        label: "智寻卡片",
+        color: "#10b981",
+        uri: "https://cardcare-iwut.tokenteam.net",
+      },
+      {
+        icon: "flash-outline",
+        label: "电费查询",
+        color: "#eab308",
+        uri: "https://zhlgd.whut.edu.cn/tpass/login?service=http://nyyzf.whut.edu.cn/MobileWebOnlineHall/#/",
+      },
+    ],
+  },
+  {
+    title: "校园资讯",
+    items: [
+      {
+        icon: "newspaper-outline",
+        label: "校园公告",
+        color: "#f97316",
+        uri: "http://i.whut.edu.cn",
+      },
+    ],
+  },
+];
+
+function openWebApp(uri: string) {
+  router.push({ pathname: "/browser", params: { uri } });
+}
 
 export default function FunctionScreen() {
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === "dark";
   const [showBrowser, setShowBrowser] = useState(false);
   const [uri, setUri] = useState("");
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      {IS_DEV && (
-        <View className="flex-1 justify-end items-end px-8 py-2">
-          <Pressable onPress={() => setShowBrowser(true)}>
-            <Ionicons name="globe-outline" size={24} color="#737373" />
-          </Pressable>
+      <ScrollView
+        className="flex-1"
+        contentContainerStyle={{ paddingBottom: 32 }}
+        showsVerticalScrollIndicator={false}
+      >
+        <View className="px-6 pb-2 pt-8">
+          <View className="flex-row items-center justify-between">
+            <Text
+              className="text-[32px] font-bold tracking-tight text-neutral-900 dark:text-neutral-50"
+              numberOfLines={1}
+            >
+              功能
+            </Text>
+            {IS_DEV && (
+              <Pressable
+                className="h-10 w-10 items-center justify-center rounded-full"
+                style={{
+                  backgroundColor: isDark
+                    ? "rgba(255,255,255,0.06)"
+                    : "rgba(0,0,0,0.04)",
+                }}
+                onPress={() => setShowBrowser(true)}
+              >
+                <Ionicons
+                  name="globe-outline"
+                  size={20}
+                  color={isDark ? "#a3a3a3" : "#737373"}
+                />
+              </Pressable>
+            )}
+          </View>
+          <Text className="mt-1.5 text-base text-neutral-400 dark:text-neutral-500">
+            校园服务，触手可及
+          </Text>
+        </View>
 
-          <Modal
-            visible={showBrowser}
-            transparent
-            animationType="fade"
-            onRequestClose={() => setShowBrowser(false)}
+        <View className="mx-6 my-4 h-px bg-neutral-100 dark:bg-neutral-800/60" />
+
+        {SECTIONS.map((section) => (
+          <View key={section.title} className="mb-5">
+            <Text className="mb-3 px-6 text-base font-semibold text-neutral-800 dark:text-neutral-100">
+              {section.title}
+            </Text>
+            <View className="flex-row flex-wrap px-2">
+              {section.items.map((app) => (
+                <AppItem
+                  key={app.label}
+                  app={app}
+                  isDark={isDark}
+                  onPress={() => openWebApp(app.uri)}
+                />
+              ))}
+            </View>
+          </View>
+        ))}
+      </ScrollView>
+
+      {IS_DEV && (
+        <Modal
+          visible={showBrowser}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setShowBrowser(false)}
+        >
+          <KeyboardAvoidingView
+            className="flex-1"
+            behavior={Platform.OS === "ios" ? "padding" : undefined}
           >
-            <KeyboardAvoidingView
-              className="flex-1"
-              behavior={Platform.OS === "ios" ? "padding" : undefined}
+            <Pressable
+              className="flex-1 justify-center bg-black/40"
+              onPress={() => setShowBrowser(false)}
             >
               <Pressable
-                className="flex-1 justify-center bg-black/40"
-                onPress={() => setShowBrowser(false)}
+                className="mx-8 rounded-3xl border border-neutral-200 bg-white p-5 dark:border-neutral-700 dark:bg-neutral-800"
+                onPress={() => {}}
               >
-                <Pressable
-                  className="mx-8 rounded-3xl border border-neutral-200 bg-white p-5 dark:border-neutral-700 dark:bg-neutral-800"
-                  onPress={() => {}}
-                >
-                  <View className="mb-4 flex-row items-center gap-2">
-                    <Ionicons name="globe-outline" size={20} color="#3b82f6" />
-                    <Text className="text-base font-semibold text-neutral-800 dark:text-neutral-100">
-                      打开网页
-                    </Text>
-                  </View>
-
-                  <View className="h-12 flex-row items-center rounded-2xl border border-neutral-200 bg-neutral-50 dark:border-neutral-600 dark:bg-neutral-700/50">
-                    <TextInput
-                      className="flex-1 text-base text-neutral-900 dark:text-neutral-100"
-                      style={{
-                        height: 48,
-                        paddingHorizontal: 8,
-                        textAlignVertical: "center",
-                      }}
-                      value={uri}
-                      onChangeText={setUri}
-                      autoFocus
-                      autoCapitalize="none"
-                      autoCorrect={false}
-                      keyboardType="url"
-                      returnKeyType="go"
-                      onSubmitEditing={() =>
-                        router.push({ pathname: "/browser", params: { uri } })
-                      }
-                    />
-                    <Pressable
-                      className="mr-1.5 h-9 w-9 items-center justify-center rounded-xl bg-blue-500 active:bg-blue-600"
-                      onPress={() =>
-                        router.push({ pathname: "/browser", params: { uri } })
-                      }
-                    >
-                      <Ionicons name="arrow-forward" size={20} color="white" />
-                    </Pressable>
-                  </View>
-                </Pressable>
+                <View className="mb-4 flex-row items-center gap-2">
+                  <Ionicons name="globe-outline" size={20} color="#3b82f6" />
+                  <Text className="text-base font-semibold text-neutral-800 dark:text-neutral-100">
+                    打开网页
+                  </Text>
+                </View>
+                <View className="h-12 flex-row items-center rounded-2xl border border-neutral-200 bg-neutral-50 dark:border-neutral-600 dark:bg-neutral-700/50">
+                  <TextInput
+                    className="flex-1 text-base text-neutral-900 dark:text-neutral-100"
+                    style={{
+                      height: 48,
+                      paddingHorizontal: 8,
+                      textAlignVertical: "center",
+                    }}
+                    value={uri}
+                    onChangeText={setUri}
+                    autoFocus
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    keyboardType="url"
+                    returnKeyType="go"
+                    onSubmitEditing={() => {
+                      setShowBrowser(false);
+                      router.push({ pathname: "/browser", params: { uri } });
+                    }}
+                  />
+                  <Pressable
+                    className="mr-1.5 h-9 w-9 items-center justify-center rounded-xl bg-blue-500 active:bg-blue-600"
+                    onPress={() => {
+                      setShowBrowser(false);
+                      router.push({ pathname: "/browser", params: { uri } });
+                    }}
+                  >
+                    <Ionicons name="arrow-forward" size={20} color="white" />
+                  </Pressable>
+                </View>
               </Pressable>
-            </KeyboardAvoidingView>
-          </Modal>
-        </View>
+            </Pressable>
+          </KeyboardAvoidingView>
+        </Modal>
       )}
     </SafeAreaView>
+  );
+}
+
+function AppItem({
+  app,
+  isDark,
+  onPress,
+}: {
+  app: WebApp;
+  isDark: boolean;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      className="w-1/5 items-center py-3"
+      onPress={onPress}
+      style={({ pressed }) => ({
+        width: "20%",
+        opacity: pressed ? 0.6 : 1,
+      })}
+    >
+      <View
+        style={{
+          width: 44,
+          height: 44,
+          borderRadius: 14,
+          backgroundColor: isDark ? `${app.color}18` : `${app.color}12`,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Ionicons name={app.icon} size={20} color={app.color} />
+      </View>
+      <Text
+        className="mt-2 text-xs text-neutral-700 dark:text-neutral-300"
+        numberOfLines={1}
+      >
+        {app.label}
+      </Text>
+    </Pressable>
   );
 }

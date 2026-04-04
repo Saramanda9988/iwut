@@ -4,14 +4,16 @@ import { router, Stack } from "expo-router";
 import { useRef } from "react";
 import { View } from "react-native";
 import Toast from "react-native-toast-message";
-import { WebView } from "react-native-webview";
+import { WebView, type WebViewNavigation } from "react-native-webview";
 
+import { useZhlgdAutoLogin } from "@/hooks/use-zhlgd-autologin";
 import { getTermStart } from "@/services/get-course";
 import { Course, useCourseStore } from "@/store/course";
 
 export default function MasterCourseScreen() {
   const isImporting = useRef(false);
   const webview = useRef<WebView>(null);
+  const { onLoadEnd: autoLoginOnLoadEnd } = useZhlgdAutoLogin(webview);
 
   return (
     <View style={{ flex: 1 }}>
@@ -24,7 +26,8 @@ export default function MasterCourseScreen() {
         style={{ flex: 1 }}
         javaScriptEnabled
         originWhitelist={["*"]}
-        onNavigationStateChange={(state) => {
+        onLoadEnd={autoLoginOnLoadEnd}
+        onNavigationStateChange={(state: WebViewNavigation) => {
           if (
             !isImporting.current &&
             state.url.startsWith("https://yjsgl.whut.edu.cn/MainFrame.htm")
