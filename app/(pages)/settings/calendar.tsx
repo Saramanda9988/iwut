@@ -1,6 +1,6 @@
 import { Stack } from "expo-router";
 import { useState } from "react";
-import { Pressable, ScrollView, Switch, Text } from "react-native";
+import { Pressable, ScrollView, Switch, Text, View } from "react-native";
 import Toast from "react-native-toast-message";
 
 import { BottomSheet } from "@/components/ui/bottom-sheet";
@@ -65,28 +65,30 @@ export default function CalendarSettingsScreen() {
         <Text className="px-5 pb-4 text-sm text-neutral-500 dark:text-neutral-400">
           确定要删除所有课程数据吗？此操作不可恢复。
         </Text>
-        <Pressable
-          className="mx-5 mb-2 items-center rounded-xl bg-red-500 py-3 active:bg-red-600"
-          onPress={() => {
-            setCourses([]);
-            setShowConfirm(false);
-            Toast.show({
-              type: "success",
-              text1: "课表已清空",
-              position: "bottom",
-            });
-          }}
-        >
-          <Text className="text-base font-medium text-white">确认清空</Text>
-        </Pressable>
-        <Pressable
-          className="mx-5 mb-2 items-center rounded-xl bg-neutral-200 py-3 active:bg-neutral-300 dark:bg-neutral-700 dark:active:bg-neutral-600"
-          onPress={() => setShowConfirm(false)}
-        >
-          <Text className="text-base font-medium text-neutral-600 dark:text-neutral-300">
-            取消
-          </Text>
-        </Pressable>
+        <View className="mx-5 mb-2 flex-row gap-3">
+          <Pressable
+            className="flex-1 items-center rounded-xl bg-neutral-200 py-3 active:bg-neutral-300 dark:bg-neutral-700 dark:active:bg-neutral-600"
+            onPress={() => setShowConfirm(false)}
+          >
+            <Text className="text-base font-medium text-neutral-600 dark:text-neutral-300">
+              取消
+            </Text>
+          </Pressable>
+          <Pressable
+            className="flex-1 items-center rounded-xl bg-red-500 py-3 active:bg-red-600"
+            onPress={() => {
+              setCourses([]);
+              setShowConfirm(false);
+              Toast.show({
+                type: "success",
+                text1: "课表已清空",
+                position: "bottom",
+              });
+            }}
+          >
+            <Text className="text-base font-medium text-white">确认清空</Text>
+          </Pressable>
+        </View>
       </BottomSheet>
     </>
   );

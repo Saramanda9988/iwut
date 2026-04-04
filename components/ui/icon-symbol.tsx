@@ -7,11 +7,11 @@ export function IconSymbol({
   size = 24,
   color,
   style,
-}: {
+}: Readonly<{
   name: ComponentProps<typeof MaterialIcons>["name"];
   size?: number;
   color: string | OpaqueColorValue;
   style?: StyleProp<TextStyle>;
-}) {
+}>) {
   return <MaterialIcons color={color} size={size} name={name} style={style} />;
 }

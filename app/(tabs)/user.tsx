@@ -95,6 +95,14 @@ export default function UserScreen() {
           showsVerticalScrollIndicator={false}
         >
           <UserCard />
+          <MenuGroup title="工具">
+            <MenuItem
+              icon="wifi"
+              iconBg="#007AFF"
+              label="校园网连接"
+              href="/user/wlan"
+            />
+          </MenuGroup>
           <MenuGroup title="设置">
             <MenuItem
               icon="settings"
