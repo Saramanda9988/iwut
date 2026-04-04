@@ -31,11 +31,11 @@ export default function WlanScreen() {
   const [inputPass, setInputPass] = useState("");
   const passwordRef = useRef<TextInput>(null);
 
-  const openSheet = () => {
+  const openSheet = useCallback(() => {
     setInputUser(username);
     setInputPass("");
     setSheetVisible(true);
-  };
+  }, [username]);
 
   const handleSave = () => {
     const trimmed = inputUser.trim();
@@ -77,7 +77,7 @@ export default function WlanScreen() {
     } finally {
       setConnecting(false);
     }
-  }, [getCredentials]);
+  }, [getCredentials, openSheet]);
 
   const handleClear = () => {
     clear();

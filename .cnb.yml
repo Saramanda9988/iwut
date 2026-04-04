@@ -14,21 +14,32 @@ main:
   push:
     - docker:
         image: docker.cnb.cool/zhxycn/env:latest
+      stages:
+        - script: |
+            export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
+            [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+            yarn install --frozen-lockfile
+            yarn run lint
+
+  web_trigger_job:
+    - docker:
+        image: docker.cnb.cool/zhxycn/env:latest
       imports:
         - https://cnb.cool/TokenTeam/secrets/-/blob/main/expo.yml
       stages:
-        - script: bash scripts/build-android.sh development
-          timeout: 1h
-        - script: mv *.apk iwut-development.apk
-        - script: bash scripts/build-android.sh preview
-          timeout: 1h
         - script: |
-            for f in *.apk; do
-              [ "$f" = "iwut-development.apk" ] && continue
-              mv "$f" iwut-preview.apk
+            IFS=',' read -ra PROFILES <<< "$BUILD_PROFILES"
+            for profile in "${PROFILES[@]}"; do
+              echo "=== Building $profile ==="
+              bash scripts/build-android.sh "$profile"
+              for f in *.apk; do
+                [ -f "$f" ] || continue
+                [[ "$f" == iwut-* ]] && continue
+                mv "$f" "iwut-${profile}.apk"
+              done
             done
+          timeout: 2h
         - image: cnbcool/attachments:latest
           settings:
             attachments:
-              - "./iwut-development.apk"
-              - "./iwut-preview.apk"
+              - "./iwut-*.apk"

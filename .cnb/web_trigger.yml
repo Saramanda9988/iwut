@@ -1,0 +1,18 @@
+branch:
+  - buttons:
+      - name: Build
+        event: web_trigger_job
+        isDefault: true
+        inputs:
+          BUILD_PROFILES:
+            type: select
+            multiple: true
+            required: true
+            default: development,preview
+            options:
+              - name: Development
+                value: development
+              - name: Preview
+                value: preview
+              - name: Production
+                value: production
