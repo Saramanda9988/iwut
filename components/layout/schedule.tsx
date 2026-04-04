@@ -13,7 +13,15 @@ import {
 import type { Course } from "@/store/course";
 import { useScheduleStore } from "@/store/schedule";
 
-const DAY_LABELS = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"];
+export const DAY_LABELS = [
+  "周一",
+  "周二",
+  "周三",
+  "周四",
+  "周五",
+  "周六",
+  "周日",
+];
 
 const ALL_SECTIONS: { flex: number }[] = [
   { flex: 2 }, // 0 早上 A: DM 1-2
@@ -34,7 +42,7 @@ const ALL_SIDEBAR_GROUPS = [
 const NOON_SECTION_INDEX = 2;
 const NOON_SIDEBAR_INDEX = 1;
 
-const COURSE_COLORS = [
+export const COURSE_COLORS = [
   "rgba(91,155,213,0.75)",
   "rgba(112,173,71,0.75)",
   "rgba(237,125,49,0.75)",
