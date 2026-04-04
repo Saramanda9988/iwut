@@ -4,7 +4,7 @@ import { View } from "react-native";
 import Toast from "react-native-toast-message";
 import { WebView } from "react-native-webview";
 
-import { getCourse } from "@/services/get-course";
+import { getCourse, getTermStart } from "@/services/get-course";
 import { useCourseStore } from "@/store/course";
 
 export default function BachelorCourseScreen() {
@@ -39,9 +39,11 @@ export default function BachelorCourseScreen() {
         onMessage={(event) => {
           const cookie = event.nativeEvent.data;
 
-          getCourse(cookie)
-            .then((courses) => {
-              useCourseStore.getState().setCourses(courses);
+          Promise.all([getCourse(cookie), getTermStart()])
+            .then(([courses, termStart]) => {
+              const store = useCourseStore.getState();
+              store.setCourses(courses);
+              store.setTermStart(termStart);
 
               Toast.show({
                 type: "success",

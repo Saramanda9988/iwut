@@ -13,14 +13,21 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Schedule } from "@/components/layout/schedule";
 import { ScrollPicker } from "@/components/ui/scroll-picker";
+import { getCurrentDayOfWeek, getCurrentWeek } from "@/lib/date";
 import { useCourseStore } from "@/store/course";
 
 const MAX_WEEK = 20;
 
 export default function CourseScreen() {
   const courses = useCourseStore((store) => store.courses);
-  const [week, setWeek] = useState<number>(1);
+  const termStart = useCourseStore((store) => store.termStart);
+  const [week, setWeek] = useState<number>(() => getCurrentWeek(termStart));
+  const today = getCurrentDayOfWeek();
   const [showWeekPicker, setShowWeekPicker] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (termStart) setWeek(getCurrentWeek(termStart));
+  }, [termStart]);
   const [fabOpen, setFabOpen] = useState(false);
   const fabProgress = useSharedValue(0);
 
@@ -91,7 +98,11 @@ export default function CourseScreen() {
         </Pressable>
       </View>
 
-      <Schedule courses={courses} week={week} />
+      <Schedule
+        courses={courses}
+        week={week}
+        today={week === getCurrentWeek(termStart) ? today : undefined}
+      />
 
       {courses.length === 0 && (
         <>

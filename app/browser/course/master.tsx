@@ -6,6 +6,7 @@ import { View } from "react-native";
 import Toast from "react-native-toast-message";
 import { WebView } from "react-native-webview";
 
+import { getTermStart } from "@/services/get-course";
 import { Course, useCourseStore } from "@/store/course";
 
 export default function MasterCourseScreen() {
@@ -67,7 +68,12 @@ export default function MasterCourseScreen() {
               }),
             );
 
-            useCourseStore.getState().setCourses(courses);
+            const store = useCourseStore.getState();
+            store.setCourses(courses);
+
+            getTermStart()
+              .then((termStart) => store.setTermStart(termStart))
+              .catch(() => {});
 
             Toast.show({
               type: "success",

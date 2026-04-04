@@ -1,11 +1,14 @@
 import { ThemeProvider } from "@react-navigation/native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { useEffect } from "react";
+import { Appearance } from "react-native";
 import "react-native-reanimated";
 import Toast from "react-native-toast-message";
 
 import { Themes } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+import { useThemeStore } from "@/store/theme";
 
 import "../global.css";
 
@@ -15,6 +18,13 @@ export const unstable_settings = {
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  const themeMode = useThemeStore((s) => s.themeMode);
+
+  useEffect(() => {
+    Appearance.setColorScheme(
+      themeMode === "system" ? "unspecified" : themeMode,
+    );
+  }, [themeMode]);
 
   return (
     <ThemeProvider value={Themes[colorScheme === "dark" ? "dark" : "default"]}>

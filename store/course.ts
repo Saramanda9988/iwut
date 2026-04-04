@@ -1,6 +1,7 @@
-import { zustandStorage } from "@/lib/storage";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+
+import { zustandStorage } from "@/lib/storage";
 
 export interface Course {
   name: string; // 课程名
@@ -15,14 +16,18 @@ export interface Course {
 
 interface CourseStore {
   courses: Course[];
+  termStart: string;
   setCourses: (courses: Course[]) => void;
+  setTermStart: (termStart: string) => void;
 }
 
 export const useCourseStore = create<CourseStore>()(
   persist(
     (set) => ({
       courses: [],
+      termStart: "",
       setCourses: (courses: Course[]) => set({ courses }),
+      setTermStart: (termStart: string) => set({ termStart }),
     }),
     {
       name: "course",

@@ -1,5 +1,14 @@
 import { Course } from "@/store/course";
 
+import { API_BASE } from "@/constants/api";
+
+export async function getTermStart(): Promise<string> {
+  const data = await fetch(`${API_BASE}/Config/time/term`).then((response) =>
+    response.json(),
+  );
+  return data.termStart.split("T")[0];
+}
+
 async function changeUserRole(headers: Record<string, string>) {
   try {
     await fetch(
