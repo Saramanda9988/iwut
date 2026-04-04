@@ -10,6 +10,7 @@ import {
   View,
 } from "react-native";
 
+import { useHaptics } from "@/hooks/use-haptics";
 import type { Course } from "@/store/course";
 import { useScheduleStore } from "@/store/schedule";
 
@@ -119,6 +120,7 @@ export function Schedule({
   const isDark = colorScheme === "dark";
   const [selected, setSelected] = useState<Course | null>(null);
 
+  const haptic = useHaptics();
   const scrollWeekend = useScheduleStore((s) => s.scrollWeekend);
   const showNoonCourse = useScheduleStore((s) => s.showNoonCourse);
 
@@ -219,7 +221,10 @@ export function Schedule({
                     overflow: "hidden",
                     flexDirection: "column",
                   }}
-                  onPress={() => setSelected(course)}
+                  onPress={() => {
+                    haptic();
+                    setSelected(course);
+                  }}
                 >
                   <View
                     style={{

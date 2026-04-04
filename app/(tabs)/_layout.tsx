@@ -4,6 +4,7 @@ import React, { type ComponentProps } from "react";
 
 import { Colors } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+import { useHaptics } from "@/hooks/use-haptics";
 
 const TAB_COLORS = {
   home: "#007AFF",
@@ -37,10 +38,14 @@ function TabIcon({
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   const theme = Colors[colorScheme === "dark" ? "dark" : "light"];
+  const haptic = useHaptics();
 
   return (
     <Tabs
       backBehavior="none"
+      screenListeners={{
+        tabPress: () => haptic(),
+      }}
       screenOptions={{
         tabBarActiveTintColor: theme.tint,
         headerShown: false,

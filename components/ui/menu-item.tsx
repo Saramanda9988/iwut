@@ -1,10 +1,12 @@
-import { IconSymbol } from "@/components/ui/icon-symbol";
-import { Colors } from "@/constants/theme";
-import { useColorScheme } from "@/hooks/use-color-scheme";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useRouter } from "expo-router";
 import { Children, ComponentProps, ReactNode } from "react";
 import { Pressable, Text, View } from "react-native";
+
+import { IconSymbol } from "@/components/ui/icon-symbol";
+import { Colors } from "@/constants/theme";
+import { useColorScheme } from "@/hooks/use-color-scheme";
+import { useHaptics } from "@/hooks/use-haptics";
 
 export function MenuItem({
   icon,
@@ -28,11 +30,13 @@ export function MenuItem({
   const router = useRouter();
   const scheme = useColorScheme();
   const iconColor = Colors[scheme === "dark" ? "dark" : "light"].icon;
+  const haptic = useHaptics();
 
   const hasCustomRight = right !== undefined;
   const shouldShowArrow = showArrow ?? !hasCustomRight;
 
   const handlePress = () => {
+    haptic();
     onPress?.();
     if (href) {
       router.push(href as any);
