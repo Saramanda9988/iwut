@@ -27,5 +27,12 @@
         "EXPO_PUBLIC_DEBUG": "0"
       }
     }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "ascAppId": "6761684977"
+      }
+    }
   }
 }
