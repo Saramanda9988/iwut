@@ -1,10 +1,17 @@
-import { createMMKV } from "react-native-mmkv";
+import { createMMKV, type MMKV } from "react-native-mmkv";
 import { createJSONStorage } from "zustand/middleware";
 
-export const mmkv = createMMKV();
+let _mmkv: MMKV | null = null;
+
+export function getMMKV(): MMKV {
+  if (!_mmkv) {
+    _mmkv = createMMKV();
+  }
+  return _mmkv;
+}
 
 export const zustandStorage = createJSONStorage(() => ({
-  getItem: (name: string) => mmkv.getString(name) ?? null,
-  setItem: (name: string, value: string) => mmkv.set(name, value),
-  removeItem: (name: string) => mmkv.remove(name),
+  getItem: (name: string) => getMMKV().getString(name) ?? null,
+  setItem: (name: string, value: string) => getMMKV().set(name, value),
+  removeItem: (name: string) => getMMKV().remove(name),
 }));
