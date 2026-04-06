@@ -3670,10 +3670,10 @@ expo-glass-effect@^55.0.10:
   resolved "https://registry.npmmirror.com/expo-glass-effect/-/expo-glass-effect-55.0.10.tgz#5db7a154e8c7dd89a7fc91f87a1d5387364f0f20"
   integrity sha512-5kL/jATvgJWdrqPdxixrECJqD2l8cfQ4ALr1DK7qi9XkyI97ejXvUjB2VsfEePNy3Fg+/VwzA3n3L7Nv3tAPkw==
 
-expo-haptics@~55.0.8:
-  version "55.0.11"
-  resolved "https://registry.npmmirror.com/expo-haptics/-/expo-haptics-55.0.11.tgz#edba71d19632884f3de10a6f6b2d815ca48dd203"
-  integrity sha512-cvayByobLtoS5Yt2JFqcBPH+1mnLHkz+Rr+H1EOCZDdTVo5T6aaAHMOZrbRBZBhxrUevAPxfz0bfyhVZj3XHzA==
+expo-haptics@~55.0.12:
+  version "55.0.12"
+  resolved "https://registry.npmmirror.com/expo-haptics/-/expo-haptics-55.0.12.tgz#0acfd85ced7709b1076962be59b549de2e952559"
+  integrity sha512-ARSp2Zr0Ch0IJyCn6t0Yj0vtfI2QjY5VluxUh8T8jKGgAmpdrq+AqZXWkH+FVNFYHXW4hjo9KSXDFhs2GDoP5w==
 
 expo-image@^55.0.8, expo-image@~55.0.6:
   version "55.0.8"
@@ -3830,7 +3830,7 @@ expo-web-browser@~55.0.9:
   resolved "https://registry.npmmirror.com/expo-web-browser/-/expo-web-browser-55.0.12.tgz#769dda4fff4b6cd38f73c49a8d03c545ad76a519"
   integrity sha512-fMmDx/belJ7oW3+Ee7LbPMYKWxQlRYY/JXWFkQ72Zm1cg9Fmxzcu8iSu8gzdvjViM3B545PPv3src5TWq9qDdA==
 
-expo@~55.0.6:
+expo@^55.0.0:
   version "55.0.11"
   resolved "https://registry.npmmirror.com/expo/-/expo-55.0.11.tgz#a9099e109b00c6580de8f851617cd34dd371509a"
   integrity sha512-EEFZHm8PDzQ1aVbRUM3NVG2Ao/bdHib+4FeD2SeaGmQJXTHiNyfFFVC8h5j2OyRHSj1R5UXw/zNPknlQHp5hRg==
