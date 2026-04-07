@@ -1,7 +1,7 @@
 import Constants from "expo-constants";
 
 const NATIVE_VERSION = Constants.expoConfig?.version;
-const OTA_PATCH = 1;
+const OTA_PATCH = 2;
 
 /**
  * Major.Minor.Patch.OTA
