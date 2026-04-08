@@ -1,6 +1,13 @@
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import { useCallback, useMemo, useRef } from "react";
-import { LayoutChangeEvent, ScrollView, Text, View } from "react-native";
+import {
+  LayoutChangeEvent,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { COURSE_COLORS, DAY_LABELS } from "@/components/layout/schedule";
@@ -8,6 +15,7 @@ import { useColorScheme } from "@/hooks/use-color-scheme";
 import { getCurrentDayOfWeek, getCurrentWeek, isVacation } from "@/lib/date";
 import type { Course } from "@/store/course";
 import { useCourseStore } from "@/store/course";
+import { useUpdateStore } from "@/store/update";
 
 const GREETINGS: { start: number; end: number; title: string; sub: string }[] =
   [
@@ -106,8 +114,10 @@ function buildColorMap(courses: Course[]): Map<string, number> {
 export default function HomeScreen() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
+  const router = useRouter();
   const courses = useCourseStore((s) => s.courses);
   const termStart = useCourseStore((s) => s.termStart);
+  const hasUpdate = useUpdateStore((s) => s.hasUpdate);
 
   const greeting = getGreeting();
   const vacation = isVacation(termStart);
@@ -184,12 +194,27 @@ export default function HomeScreen() {
       >
         {/* 问候 */}
         <View className="px-6 pb-2 pt-8">
-          <Text
-            className="text-[32px] font-bold tracking-tight text-neutral-900 dark:text-neutral-50"
-            numberOfLines={1}
-          >
-            {greeting.title}
-          </Text>
+          <View className="flex-row items-center justify-between">
+            <Text
+              className="text-[32px] font-bold tracking-tight text-neutral-900 dark:text-neutral-50"
+              numberOfLines={1}
+            >
+              {greeting.title}
+            </Text>
+            {hasUpdate && (
+              <Pressable
+                className="relative p-1 active:opacity-60"
+                onPress={() => router.push("/about" as any)}
+              >
+                <Ionicons
+                  name="arrow-up-circle-outline"
+                  size={24}
+                  color={isDark ? "#a3a3a3" : "#737373"}
+                />
+                <View className="absolute right-0.5 top-0.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-red-500 dark:border-neutral-900" />
+              </Pressable>
+            )}
+          </View>
           <Text className="mt-1.5 text-base text-neutral-400 dark:text-neutral-500">
             {greeting.sub}
           </Text>

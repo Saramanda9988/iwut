@@ -17,6 +17,7 @@ export function MenuItem({
   value,
   right,
   showArrow,
+  badge,
 }: Readonly<{
   icon: ComponentProps<typeof MaterialIcons>["name"];
   iconBg?: string;
@@ -26,6 +27,7 @@ export function MenuItem({
   value?: string;
   right?: ReactNode;
   showArrow?: boolean;
+  badge?: boolean;
 }>) {
   const router = useRouter();
   const scheme = useColorScheme();
@@ -49,15 +51,23 @@ export function MenuItem({
       onPress={handlePress}
     >
       {iconBg ? (
-        <View
-          className="h-8 w-8 items-center justify-center rounded-lg"
-          style={{ backgroundColor: iconBg }}
-        >
-          <IconSymbol name={icon} size={18} color="#fff" />
+        <View className="relative">
+          <View
+            className="h-8 w-8 items-center justify-center rounded-lg"
+            style={{ backgroundColor: iconBg }}
+          >
+            <IconSymbol name={icon} size={18} color="#fff" />
+          </View>
+          {badge && (
+            <View className="absolute -right-1 -top-1 h-3 w-3 rounded-full border-2 border-white bg-red-500 dark:border-neutral-800" />
+          )}
         </View>
       ) : (
-        <View className="w-8 items-center">
+        <View className="relative w-8 items-center">
           <IconSymbol name={icon} size={22} color={iconColor} />
+          {badge && (
+            <View className="absolute -right-0.5 -top-0.5 h-3 w-3 rounded-full border-2 border-white bg-red-500 dark:border-neutral-800" />
+          )}
         </View>
       )}
       <Text className="ml-3 flex-1 text-base text-neutral-900 dark:text-neutral-100">

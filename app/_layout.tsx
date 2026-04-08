@@ -9,6 +9,7 @@ import Toast from "react-native-toast-message";
 import { Themes } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useThemeStore } from "@/store/theme";
+import { useUpdateStore } from "@/store/update";
 
 import "../global.css";
 
@@ -30,6 +31,10 @@ export default function RootLayout() {
       themeMode === "system" ? "unspecified" : themeMode,
     );
   }, [themeMode]);
+
+  useEffect(() => {
+    useUpdateStore.getState().check();
+  }, []);
 
   return (
     <ThemeProvider value={Themes[colorScheme === "dark" ? "dark" : "default"]}>
