@@ -80,7 +80,6 @@ export async function getCourse(cookie: string) {
     return weeks.map(([weekStart, weekEnd]) => ({
       name: course.KCM,
       room: course.JASMC,
-      teacher: course.SKJS,
       weekStart,
       weekEnd,
       day: course.SKXQ,

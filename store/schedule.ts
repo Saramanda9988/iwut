@@ -1,22 +1,62 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
+import {
+  BUILTIN_PALETTES,
+  type ColorPalette,
+} from "@/constants/course-palettes";
 import { zustandStorage } from "@/lib/storage";
 
 interface ScheduleStore {
   scrollWeekend: boolean;
-  showNoonCourse: boolean;
+  colorPalette: ColorPalette;
+  customPalettes: ColorPalette[];
+  courseColorOverrides: Record<string, string>;
+  backgroundImageUri: string | null;
   setScrollWeekend: (value: boolean) => void;
-  setShowNoonCourse: (value: boolean) => void;
+  setColorPalette: (palette: ColorPalette) => void;
+  addCustomPalette: (palette: ColorPalette) => void;
+  removeCustomPalette: (name: string) => void;
+  setCourseColorOverride: (name: string, color: string) => void;
+  removeCourseColorOverride: (name: string) => void;
+  setBackgroundImageUri: (uri: string | null) => void;
 }
 
 export const useScheduleStore = create<ScheduleStore>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       scrollWeekend: true,
-      showNoonCourse: false,
+      colorPalette: BUILTIN_PALETTES[0],
+      customPalettes: [],
+      courseColorOverrides: {},
+      backgroundImageUri: null,
       setScrollWeekend: (value: boolean) => set({ scrollWeekend: value }),
-      setShowNoonCourse: (value: boolean) => set({ showNoonCourse: value }),
+      setColorPalette: (palette: ColorPalette) =>
+        set({ colorPalette: palette }),
+      addCustomPalette: (palette: ColorPalette) =>
+        set({
+          customPalettes: [
+            ...get().customPalettes.filter((p) => p.name !== palette.name),
+            palette,
+          ],
+        }),
+      removeCustomPalette: (name: string) =>
+        set({
+          customPalettes: get().customPalettes.filter((p) => p.name !== name),
+        }),
+      setCourseColorOverride: (name: string, color: string) =>
+        set({
+          courseColorOverrides: {
+            ...get().courseColorOverrides,
+            [name]: color,
+          },
+        }),
+      removeCourseColorOverride: (name: string) => {
+        const { [name]: _, ...rest } = get().courseColorOverrides;
+        set({ courseColorOverrides: rest });
+      },
+      setBackgroundImageUri: (uri: string | null) =>
+        set({ backgroundImageUri: uri }),
     }),
     {
       name: "schedule",

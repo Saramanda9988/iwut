@@ -24,40 +24,18 @@ export const DAY_LABELS = [
   "周日",
 ];
 
-const ALL_GROUPS: number[][] = [
+const SECTION_GROUPS: number[][] = [
   [1, 2],
   [3, 4, 5],
   [6, 7],
   [8, 9, 10],
-  [11, 12],
-  [13],
-  [14, 15, 16],
+  [11, 12, 13],
 ];
 
-const HIDDEN_GROUP_INDICES = [2, 5];
-
-const ALL_SIDEBAR_LABELS = [
+const SIDEBAR_LABELS = [
   { label: "早\n上", firstSection: 1, lastSection: 5 },
-  { label: "中\n午", firstSection: 6, lastSection: 7 },
-  { label: "下\n午", firstSection: 8, lastSection: 12 },
-  { label: "晚\n上", firstSection: 13, lastSection: 16 },
-];
-
-const COMPACT_SIDEBAR_LABELS = [
-  { label: "早\n上", firstSection: 1, lastSection: 5 },
-  { label: "下\n午", firstSection: 8, lastSection: 12 },
-  { label: "晚\n上", firstSection: 14, lastSection: 16 },
-];
-
-export const COURSE_COLORS = [
-  "rgba(91,155,213,0.75)",
-  "rgba(112,173,71,0.75)",
-  "rgba(237,125,49,0.75)",
-  "rgba(168,85,247,0.75)",
-  "rgba(236,72,153,0.75)",
-  "rgba(20,184,166,0.75)",
-  "rgba(245,158,11,0.75)",
-  "rgba(99,102,241,0.75)",
+  { label: "下\n午", firstSection: 6, lastSection: 10 },
+  { label: "晚\n上", firstSection: 11, lastSection: 13 },
 ];
 
 const GAP_UNITS = 0;
@@ -69,16 +47,31 @@ function pct(n: number): `${number}%` {
   return `${n}%` as `${number}%`;
 }
 
-function buildColorMap(courses: Course[]): Map<string, number> {
+function buildColorMap(
+  courses: Course[],
+  paletteSize: number,
+): Map<string, number> {
   const map = new Map<string, number>();
   let idx = 0;
   for (const c of courses) {
     if (!map.has(c.name)) {
-      map.set(c.name, idx % COURSE_COLORS.length);
+      map.set(c.name, idx % paletteSize);
       idx++;
     }
   }
   return map;
+}
+
+function getCourseColor(
+  courseName: string,
+  colorMap: Map<string, number>,
+  paletteColors: string[],
+  paletteOverrides: Record<string, string> | undefined,
+  courseColorOverrides: Record<string, string>,
+): string {
+  if (courseColorOverrides[courseName]) return courseColorOverrides[courseName];
+  if (paletteOverrides?.[courseName]) return paletteOverrides[courseName];
+  return paletteColors[(colorMap.get(courseName) ?? 0) % paletteColors.length];
 }
 
 function buildDayCourses(courses: Course[]): Course[][] {
@@ -144,19 +137,21 @@ export function Schedule({
 
   const haptic = useHaptics();
   const scrollWeekend = useScheduleStore((s) => s.scrollWeekend);
-  const showNoonCourse = useScheduleStore((s) => s.showNoonCourse);
+  const colorPalette = useScheduleStore((s) => s.colorPalette);
+  const courseColorOverrides = useScheduleStore((s) => s.courseColorOverrides);
+  const backgroundImageUri = useScheduleStore((s) => s.backgroundImageUri);
+  const paletteColors = colorPalette.colors;
+  const hasBgImage = !!backgroundImageUri;
 
-  const layout = useMemo(() => {
-    const groups = showNoonCourse
-      ? ALL_GROUPS
-      : ALL_GROUPS.filter((_, i) => !HIDDEN_GROUP_INDICES.includes(i));
-    const sidebarLabels = showNoonCourse
-      ? ALL_SIDEBAR_LABELS
-      : COMPACT_SIDEBAR_LABELS;
-    return computeLayout(groups, sidebarLabels);
-  }, [showNoonCourse]);
+  const layout = useMemo(
+    () => computeLayout(SECTION_GROUPS, SIDEBAR_LABELS),
+    [],
+  );
 
-  const colorMap = useMemo(() => buildColorMap(courses), [courses]);
+  const colorMap = useMemo(
+    () => buildColorMap(courses, paletteColors.length),
+    [courses, paletteColors.length],
+  );
 
   const weekCourses = useMemo(
     () => courses.filter((c) => c.weekStart <= week && c.weekEnd >= week),
@@ -174,7 +169,11 @@ export function Schedule({
   const nameFontSize = scrollWeekend ? 12 : 10;
   const roomFontSize = scrollWeekend ? 10 : 9;
 
-  const emptyBg = isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)";
+  const emptyBg = hasBgImage
+    ? "rgba(255,255,255,0.08)"
+    : isDark
+      ? "rgba(255,255,255,0.03)"
+      : "rgba(0,0,0,0.02)";
 
   const scrollRef = useCallback(
     (node: ScrollView | null) => {
@@ -251,7 +250,13 @@ export function Schedule({
                 layout.sectionTop[course.sectionEnd] +
                 layout.sectionPct -
                 topVal;
-              const bg = COURSE_COLORS[colorMap.get(course.name) ?? 0];
+              const bg = getCourseColor(
+                course.name,
+                colorMap,
+                paletteColors,
+                colorPalette.overrides,
+                courseColorOverrides,
+              );
               const span = course.sectionEnd - course.sectionStart + 1;
               const nameLines = 2 * span - 1;
 
@@ -401,8 +406,13 @@ export function Schedule({
             >
               <View
                 style={{
-                  backgroundColor:
-                    COURSE_COLORS[colorMap.get(selected.name) ?? 0],
+                  backgroundColor: getCourseColor(
+                    selected.name,
+                    colorMap,
+                    paletteColors,
+                    colorPalette.overrides,
+                    courseColorOverrides,
+                  ),
                   paddingHorizontal: 22,
                   paddingTop: 22,
                   paddingBottom: 18,
@@ -447,12 +457,6 @@ export function Schedule({
                   icon="location-outline"
                   label="教室"
                   value={selected.room}
-                  isDark={isDark}
-                />
-                <DetailRow
-                  icon="person-outline"
-                  label="教师"
-                  value={selected.teacher}
                   isDark={isDark}
                 />
                 <DetailRow

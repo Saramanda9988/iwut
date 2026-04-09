@@ -8,7 +8,7 @@ const config: ExpoConfig = {
   slug: "iwut",
   version: "0.1.1",
   runtimeVersion: {
-    policy: "fingerprint",
+    policy: "appVersion",
   },
   updates: {
     url: "https://u.expo.dev/db91117d-c051-4555-a16b-7a996823672e",
@@ -27,6 +27,7 @@ const config: ExpoConfig = {
         "用于在连接校园网时读取当前 Wi-Fi 相关信息并完成网络认证",
       NSAppTransportSecurity: {
         NSAllowsArbitraryLoads: true,
+        NSAllowsArbitraryLoadsInWebContent: true,
       },
     },
   },

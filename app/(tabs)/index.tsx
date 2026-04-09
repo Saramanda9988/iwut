@@ -10,11 +10,12 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { COURSE_COLORS, DAY_LABELS } from "@/components/layout/schedule";
+import { DAY_LABELS } from "@/components/layout/schedule";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { getCurrentDayOfWeek, getCurrentWeek, isVacation } from "@/lib/date";
 import type { Course } from "@/store/course";
 import { useCourseStore } from "@/store/course";
+import { useScheduleStore } from "@/store/schedule";
 import { useUpdateStore } from "@/store/update";
 
 const GREETINGS: { start: number; end: number; title: string; sub: string }[] =
@@ -99,18 +100,6 @@ function getDateContext(termStart: string, vacation: boolean) {
   return `第 ${week} 周 · ${DAY_LABELS[day - 1]} · ${month}月${date}日`;
 }
 
-function buildColorMap(courses: Course[]): Map<string, number> {
-  const map = new Map<string, number>();
-  let idx = 0;
-  for (const c of courses) {
-    if (!map.has(c.name)) {
-      map.set(c.name, idx % COURSE_COLORS.length);
-      idx++;
-    }
-  }
-  return map;
-}
-
 export default function HomeScreen() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
@@ -118,6 +107,8 @@ export default function HomeScreen() {
   const courses = useCourseStore((s) => s.courses);
   const termStart = useCourseStore((s) => s.termStart);
   const hasUpdate = useUpdateStore((s) => s.hasUpdate);
+  const colorPalette = useScheduleStore((s) => s.colorPalette);
+  const courseColorOverrides = useScheduleStore((s) => s.courseColorOverrides);
 
   const greeting = getGreeting();
   const vacation = isVacation(termStart);
@@ -136,7 +127,18 @@ export default function HomeScreen() {
     [courses, today, week],
   );
 
-  const colorMap = useMemo(() => buildColorMap(courses), [courses]);
+  const paletteColors = colorPalette.colors;
+  const colorMap = useMemo(() => {
+    const map = new Map<string, number>();
+    let idx = 0;
+    for (const c of courses) {
+      if (!map.has(c.name)) {
+        map.set(c.name, idx % paletteColors.length);
+        idx++;
+      }
+    }
+    return map;
+  }, [courses, paletteColors.length]);
   const hasCourses = courses.length > 0;
 
   const finishedCount = useMemo(
@@ -304,7 +306,14 @@ export default function HomeScreen() {
                     >
                       <CourseCard
                         course={course}
-                        color={COURSE_COLORS[colorMap.get(course.name) ?? 0]}
+                        color={
+                          courseColorOverrides[course.name] ??
+                          colorPalette.overrides?.[course.name] ??
+                          paletteColors[
+                            (colorMap.get(course.name) ?? 0) %
+                              paletteColors.length
+                          ]
+                        }
                         past={past}
                         countdown={countdown}
                         isDark={isDark}
@@ -434,11 +443,6 @@ function CourseCard({
           <ChipInfo
             icon="location-outline"
             text={course.room}
-            color={subColor}
-          />
-          <ChipInfo
-            icon="person-outline"
-            text={course.teacher}
             color={subColor}
           />
         </View>

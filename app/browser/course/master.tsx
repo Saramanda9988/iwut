@@ -62,7 +62,6 @@ export default function MasterCourseScreen() {
               (c: any) => ({
                 name: c.name,
                 room: c.room,
-                teacher: c.teacher,
                 weekStart: c.weekStart,
                 weekEnd: c.weekEnd,
                 day: c.weekDay,
