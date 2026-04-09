@@ -12,6 +12,27 @@ const LIBRARY_CAS_URL =
 const READER_INFO_URL = `http://${LIBRARY_HOST}/opac/reader/getReaderInfo`;
 
 const INJECTED_JS = `(function(){
+  function simplifyLogin(){
+    var pwdTab=document.querySelector('#password_login');
+    if(!pwdTab){setTimeout(simplifyLogin,200);return;}
+
+    pwdTab.click();
+
+    var css=document.createElement('style');
+    css.textContent=
+      '.login_banner{display:none!important}'+
+      '.login_box_tab{display:none!important}'+
+      '.code-login{display:none!important}'+
+      '.qq_bar{display:none!important}'+
+      '.login_box_notice{display:none!important}'+
+      '.new_student{display:none!important}'+
+      '.dit-line{display:none!important}'+
+      '.browser{display:none!important}'+
+      '#footer,.footer-login{display:none!important}'+
+      '.content_login_box{float:none!important;margin:0 auto!important}';
+    document.head.appendChild(css);
+  }
+
   function track(){
     var u=document.querySelector('#un');
     var p=document.querySelector('#pd');
@@ -44,6 +65,10 @@ const INJECTED_JS = `(function(){
         eduLevel:(document.getElementsByName('rdSort5')[0]||{}).value||''
       }));
     }catch(e){setTimeout(trackInfo,300);}
+  }
+
+  if(/tpass\\/login/.test(window.location.href)){
+    simplifyLogin();
   }
   track();
   trackInfo();
