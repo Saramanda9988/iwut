@@ -14,7 +14,6 @@ import {
 import Toast from "react-native-toast-message";
 
 import { MenuGroup, MenuItem } from "@/components/ui/menu-item";
-import { FUNCTION_API } from "@/constants/api";
 import { IS_DEV } from "@/constants/is-dev";
 import { Colors } from "@/constants/theme";
 import { VERSION } from "@/constants/version";
@@ -54,11 +53,14 @@ export default function AboutScreen() {
         text2: `v${latest} 可用，点击下载`,
         position: "bottom",
         onPress: () => {
-          const platform = Platform.OS === "ios" ? "ios" : "android";
-          const channel = Updates.channel ?? "production";
-          Linking.openURL(
-            `${FUNCTION_API}/download/latest?platform=${platform}&channel=${channel}`,
-          );
+          if (Platform.OS === "ios") {
+            Linking.openURL("itms-apps://apps.apple.com/cn/app/id6761684977");
+          } else {
+            const channel = Updates.channel ?? "production";
+            Linking.openURL(
+              `https://download.tokenteam.dev/iwut/${latest}/${channel}.apk`,
+            );
+          }
           Toast.hide();
         },
       });

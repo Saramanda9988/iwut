@@ -1,4 +1,3 @@
-import { FUNCTION_API } from "@/constants/api";
 import { NATIVE_VERSION } from "@/constants/version";
 
 function compareVersions(a: string, b: string): number {
@@ -17,7 +16,7 @@ export async function checkUpdate(): Promise<{
   latestVersion: string;
 }> {
   const { version: latestVersion } = await fetch(
-    `${FUNCTION_API}/version`,
+    "https://cdn.jsdmirror.com/gh/TokenTeam/iwut@main/package.json",
   ).then((res) => res.json());
 
   return {
