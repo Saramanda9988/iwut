@@ -1,9 +1,10 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Stack, useRouter } from "expo-router";
-import { useMemo } from "react";
-import { Alert, Pressable, ScrollView, Text, View } from "react-native";
+import { useMemo, useState } from "react";
+import { Pressable, ScrollView, Text, View } from "react-native";
 import Toast from "react-native-toast-message";
 
+import { ConfirmSheet } from "@/components/ui/confirm-sheet";
 import { DAY_LABELS } from "@/components/layout/schedule";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useCourseStore } from "@/store/course";
@@ -15,6 +16,9 @@ export default function ManageCourseScreen() {
   const courses = useCourseStore((s) => s.courses);
   const setCourses = useCourseStore((s) => s.setCourses);
   const removeCoursesByName = useCourseStore((s) => s.removeCoursesByName);
+
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const [clearVisible, setClearVisible] = useState(false);
 
   const uniqueCourses = useMemo(() => {
     const map = new Map<
@@ -35,22 +39,17 @@ export default function ManageCourseScreen() {
     return [...map.values()];
   }, [courses]);
 
-  const handleDelete = (name: string) => {
-    Alert.alert("删除课程", `确定要删除「${name}」的所有时段吗？`, [
-      { text: "取消", style: "cancel" },
-      {
-        text: "删除",
-        style: "destructive",
-        onPress: () => {
-          removeCoursesByName(name);
-          Toast.show({
-            type: "success",
-            text1: `已删除「${name}」`,
-            position: "bottom",
-          });
-        },
-      },
-    ]);
+  const handleDelete = (name: string) => setDeleteTarget(name);
+
+  const confirmDelete = () => {
+    if (!deleteTarget) return;
+    removeCoursesByName(deleteTarget);
+    Toast.show({
+      type: "success",
+      text1: `已删除「${deleteTarget}」`,
+      position: "bottom",
+    });
+    setDeleteTarget(null);
   };
 
   return (
@@ -126,32 +125,40 @@ export default function ManageCourseScreen() {
         {courses.length > 0 && (
           <Pressable
             className="mt-4 items-center rounded-xl bg-white py-3.5 active:bg-neutral-50 dark:bg-neutral-800 dark:active:bg-neutral-700"
-            onPress={() =>
-              Alert.alert(
-                "清空课表",
-                "确定要删除所有课程吗？此操作不可恢复。",
-                [
-                  { text: "取消", style: "cancel" },
-                  {
-                    text: "清空",
-                    style: "destructive",
-                    onPress: () => {
-                      setCourses([]);
-                      Toast.show({
-                        type: "success",
-                        text1: "课表已清空",
-                        position: "bottom",
-                      });
-                    },
-                  },
-                ],
-              )
-            }
+            onPress={() => setClearVisible(true)}
           >
             <Text className="text-sm font-medium text-red-500">清空课表</Text>
           </Pressable>
         )}
       </ScrollView>
+
+      <ConfirmSheet
+        visible={deleteTarget !== null}
+        onClose={() => setDeleteTarget(null)}
+        title="删除课程"
+        description={`确定要删除「${deleteTarget}」的所有时段吗？`}
+        confirmText="删除"
+        destructive
+        onConfirm={confirmDelete}
+      />
+
+      <ConfirmSheet
+        visible={clearVisible}
+        onClose={() => setClearVisible(false)}
+        title="清空课表"
+        description="确定要删除所有课程吗？此操作不可恢复。"
+        confirmText="清空"
+        destructive
+        onConfirm={() => {
+          setCourses([]);
+          setClearVisible(false);
+          Toast.show({
+            type: "success",
+            text1: "课表已清空",
+            position: "bottom",
+          });
+        }}
+      />
     </>
   );
 }

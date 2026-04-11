@@ -13,6 +13,7 @@ import {
 import Toast from "react-native-toast-message";
 
 import { BottomSheet } from "@/components/ui/bottom-sheet";
+import { ConfirmSheet } from "@/components/ui/confirm-sheet";
 import { MenuGroup, MenuItem } from "@/components/ui/menu-item";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { login } from "@/services/wlan";
@@ -220,31 +221,15 @@ export default function WlanScreen() {
         </View>
       </BottomSheet>
 
-      <BottomSheet
+      <ConfirmSheet
         visible={clearVisible}
         onClose={() => setClearVisible(false)}
         title="清除账号"
-      >
-        <Text className="px-5 pb-4 text-sm text-neutral-500 dark:text-neutral-400">
-          确定要清除已保存的校园网账号吗？
-        </Text>
-        <View className="mx-5 mb-2 flex-row gap-3">
-          <Pressable
-            className="flex-1 items-center rounded-xl bg-neutral-200 py-3 active:bg-neutral-300 dark:bg-neutral-700 dark:active:bg-neutral-600"
-            onPress={() => setClearVisible(false)}
-          >
-            <Text className="text-base font-medium text-neutral-600 dark:text-neutral-300">
-              取消
-            </Text>
-          </Pressable>
-          <Pressable
-            className="flex-1 items-center rounded-xl bg-red-500 py-3 active:bg-red-600"
-            onPress={handleClear}
-          >
-            <Text className="text-base font-medium text-white">确认清除</Text>
-          </Pressable>
-        </View>
-      </BottomSheet>
+        description="确定要清除已保存的校园网账号吗？"
+        confirmText="确认清除"
+        destructive
+        onConfirm={handleClear}
+      />
     </>
   );
 }

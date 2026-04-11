@@ -1,8 +1,10 @@
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useRouter } from "expo-router";
-import { Alert, Pressable, ScrollView, Text, View } from "react-native";
+import { useState } from "react";
+import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { ConfirmSheet } from "@/components/ui/confirm-sheet";
 import { MenuGroup, MenuItem } from "@/components/ui/menu-item";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useUserBindStore } from "@/store/user-bind";
@@ -12,6 +14,7 @@ function UserCard() {
   const scheme = useColorScheme();
   const isDark = scheme === "dark";
   const { isBound, studentId, studentName, unbind } = useUserBindStore();
+  const [unbindVisible, setUnbindVisible] = useState(false);
 
   if (!isBound) {
     return (
@@ -46,42 +49,49 @@ function UserCard() {
     );
   }
 
-  const handleUnbind = () => {
-    Alert.alert("解除绑定", "确定要解除智慧理工大账号绑定吗？", [
-      { text: "取消", style: "cancel" },
-      { text: "解绑", style: "destructive", onPress: unbind },
-    ]);
-  };
-
   return (
-    <View className="mb-4 rounded-2xl bg-white px-4 py-5 dark:bg-neutral-800">
-      <View className="flex-row items-center">
-        <View
-          className="h-12 w-12 items-center justify-center rounded-full"
-          style={{ backgroundColor: isDark ? "#14532d" : "#dcfce7" }}
-        >
-          <MaterialIcons
-            name="person"
-            size={24}
-            color={isDark ? "#4ade80" : "#16a34a"}
-          />
+    <>
+      <View className="mb-4 rounded-2xl bg-white px-4 py-5 dark:bg-neutral-800">
+        <View className="flex-row items-center">
+          <View
+            className="h-12 w-12 items-center justify-center rounded-full"
+            style={{ backgroundColor: isDark ? "#14532d" : "#dcfce7" }}
+          >
+            <MaterialIcons
+              name="person"
+              size={24}
+              color={isDark ? "#4ade80" : "#16a34a"}
+            />
+          </View>
+          <View className="ml-3 flex-1">
+            <Text className="text-base font-semibold text-neutral-900 dark:text-neutral-100">
+              {studentName}
+            </Text>
+            <Text className="mt-0.5 text-sm text-neutral-400 dark:text-neutral-500">
+              {studentId}
+            </Text>
+          </View>
+          <Pressable
+            className="rounded-lg px-3 py-1.5 active:bg-neutral-100 dark:active:bg-neutral-700"
+            onPress={() => setUnbindVisible(true)}
+          >
+            <Text className="text-sm text-red-500">解绑</Text>
+          </Pressable>
         </View>
-        <View className="ml-3 flex-1">
-          <Text className="text-base font-semibold text-neutral-900 dark:text-neutral-100">
-            {studentName}
-          </Text>
-          <Text className="mt-0.5 text-sm text-neutral-400 dark:text-neutral-500">
-            {studentId}
-          </Text>
-        </View>
-        <Pressable
-          className="rounded-lg px-3 py-1.5 active:bg-neutral-100 dark:active:bg-neutral-700"
-          onPress={handleUnbind}
-        >
-          <Text className="text-sm text-red-500">解绑</Text>
-        </Pressable>
       </View>
-    </View>
+      <ConfirmSheet
+        visible={unbindVisible}
+        onClose={() => setUnbindVisible(false)}
+        title="解除绑定"
+        description="确定要解除智慧理工大账号绑定吗？"
+        confirmText="解绑"
+        destructive
+        onConfirm={() => {
+          unbind();
+          setUnbindVisible(false);
+        }}
+      />
+    </>
   );
 }
 
