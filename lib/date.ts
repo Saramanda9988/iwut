@@ -26,3 +26,38 @@ export function isVacation(termStart: string): boolean {
     ) + 1;
   return week > MAX_WEEK || week < 1;
 }
+
+export function getTermWeekMonday(
+  termStart: string,
+  week: number,
+): Date | null {
+  if (!termStart) return null;
+  const start = new Date(termStart + "T00:00:00");
+  if (Number.isNaN(start.getTime())) return null;
+  const monday = new Date(start);
+  monday.setDate(monday.getDate() + (week - 1) * 7);
+  return monday;
+}
+
+export function getTermWeekMonthLabel(
+  termStart: string,
+  week: number,
+): string | null {
+  const monday = getTermWeekMonday(termStart, week);
+  if (!monday) return null;
+  const m = monday.getMonth() + 1;
+  return `${m}\n月`;
+}
+
+export function getTermWeekDayNumbers(
+  termStart: string,
+  week: number,
+): number[] | null {
+  const monday = getTermWeekMonday(termStart, week);
+  if (!monday) return null;
+  return Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(monday);
+    d.setDate(d.getDate() + i);
+    return d.getDate();
+  });
+}

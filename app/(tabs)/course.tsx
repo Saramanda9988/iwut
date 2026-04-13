@@ -14,6 +14,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Schedule } from "@/components/layout/schedule";
 import { ScrollPicker } from "@/components/ui/scroll-picker";
+import { useHaptics } from "@/hooks/use-haptics";
 import { getCurrentDayOfWeek, getCurrentWeek } from "@/lib/date";
 import { useCourseStore } from "@/store/course";
 import { useScheduleStore } from "@/store/schedule";
@@ -28,6 +29,7 @@ export default function CourseScreen() {
   const backgroundImageUri = useScheduleStore((s) => s.backgroundImageUri);
   const [week, setWeek] = useState<number>(() => getCurrentWeek(termStart));
   const today = getCurrentDayOfWeek();
+  const haptic = useHaptics();
   const [showWeekPicker, setShowWeekPicker] = useState<boolean>(false);
 
   useEffect(() => {
@@ -87,34 +89,69 @@ export default function CourseScreen() {
         />
       )}
       <SafeAreaView style={{ flex: 1 }}>
-        <View className="h-12 w-full flex-row items-center justify-center">
-          <Pressable
-            className="w-10 items-center"
-            style={{ opacity: week <= 1 ? 0 : 1 }}
-            disabled={week <= 1}
-            onPress={() => setWeek((w) => w - 1)}
-          >
-            <Ionicons name="chevron-back" size={20} color="gray" />
-          </Pressable>
+        <View className="h-12 w-full flex-row items-center px-3">
+          <View style={{ width: 48 }} />
+
+          <View className="flex-1 flex-row items-center justify-center">
+            <Pressable
+              className="w-10 items-center"
+              style={{ opacity: week <= 1 ? 0 : 1 }}
+              disabled={week <= 1}
+              onPress={() => {
+                haptic();
+                setWeek((w) => w - 1);
+              }}
+            >
+              <Ionicons name="chevron-back" size={20} color="gray" />
+            </Pressable>
+
+            <Pressable
+              className="w-20 items-center"
+              onPress={() => {
+                setShowWeekPicker(true);
+              }}
+            >
+              <Text className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
+                第 {week} 周
+              </Text>
+            </Pressable>
+
+            <Pressable
+              className="w-10 items-center"
+              style={{ opacity: week >= MAX_WEEK ? 0 : 1 }}
+              disabled={week >= MAX_WEEK}
+              onPress={() => {
+                haptic();
+                setWeek((w) => w + 1);
+              }}
+            >
+              <Ionicons name="chevron-forward" size={20} color="gray" />
+            </Pressable>
+          </View>
 
           <Pressable
-            className="w-20 items-center"
+            style={{
+              width: 48,
+              alignItems: "center",
+              opacity: week !== getCurrentWeek(termStart) ? 1 : 0,
+            }}
+            disabled={week === getCurrentWeek(termStart)}
             onPress={() => {
-              setShowWeekPicker(true);
+              haptic();
+              setWeek(getCurrentWeek(termStart));
             }}
           >
-            <Text className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
-              第 {week} 周
+            <Ionicons name="today-outline" size={18} color="#3b82f6" />
+            <Text
+              style={{
+                fontSize: 9,
+                color: "#3b82f6",
+                fontWeight: "500",
+                marginTop: 1,
+              }}
+            >
+              {`${new Date().getMonth() + 1}月${new Date().getDate()}日`}
             </Text>
-          </Pressable>
-
-          <Pressable
-            className="w-10 items-center"
-            style={{ opacity: week >= MAX_WEEK ? 0 : 1 }}
-            disabled={week >= MAX_WEEK}
-            onPress={() => setWeek((w) => w + 1)}
-          >
-            <Ionicons name="chevron-forward" size={20} color="gray" />
           </Pressable>
         </View>
 
@@ -122,6 +159,7 @@ export default function CourseScreen() {
           courses={courses}
           week={week}
           today={week === getCurrentWeek(termStart) ? today : undefined}
+          termStart={termStart}
         />
 
         {isBound && courses.length === 0 && (

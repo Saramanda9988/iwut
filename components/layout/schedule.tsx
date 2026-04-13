@@ -11,6 +11,8 @@ import {
 
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useHaptics } from "@/hooks/use-haptics";
+import { getTermWeekDayNumbers, getTermWeekMonthLabel } from "@/lib/date";
+import { formatCourseSectionTimeRange } from "@/services/course-time";
 import type { Course } from "@/store/course";
 import { useScheduleStore } from "@/store/schedule";
 
@@ -40,6 +42,7 @@ const SIDEBAR_LABELS = [
 
 const GAP_UNITS = 0;
 const HEADER_HEIGHT = 36;
+const HEADER_HEIGHT_WITH_DATES = 44;
 const SIDEBAR_WIDTH = 24;
 const PEEK_WIDTH = 20;
 
@@ -125,10 +128,12 @@ export function Schedule({
   courses,
   week,
   today,
+  termStart,
 }: Readonly<{
   courses: Course[];
   week: number;
   today?: number;
+  termStart?: string;
 }>) {
   const { width: screenWidth } = useWindowDimensions();
   const colorScheme = useColorScheme();
@@ -159,6 +164,18 @@ export function Schedule({
   );
 
   const dayCourses = useMemo(() => buildDayCourses(weekCourses), [weekCourses]);
+
+  const monthLabel = useMemo(
+    () => (termStart ? getTermWeekMonthLabel(termStart, week) : null),
+    [termStart, week],
+  );
+  const dayNumbers = useMemo(
+    () => (termStart ? getTermWeekDayNumbers(termStart, week) : null),
+    [termStart, week],
+  );
+  const showDates = !!(monthLabel && dayNumbers);
+
+  const headerHeight = showDates ? HEADER_HEIGHT_WITH_DATES : HEADER_HEIGHT;
 
   const visibleCols = scrollWeekend ? 5 : 7;
   const availableWidth = screenWidth - SIDEBAR_WIDTH;
@@ -192,20 +209,54 @@ export function Schedule({
       <View key={dayIdx} style={{ width: colWidth }}>
         <View
           style={{
-            height: HEADER_HEIGHT,
+            height: headerHeight,
             justifyContent: "center",
             alignItems: "center",
           }}
         >
-          <Text
-            style={{
-              fontSize: 12,
-              fontWeight: isToday ? "800" : "600",
-              color: isToday ? "#3b82f6" : isDark ? "#d4d4d4" : "#525252",
-            }}
-          >
-            {DAY_LABELS[dayIdx]}
-          </Text>
+          {showDates && dayNumbers ? (
+            <View
+              style={{
+                width: 36,
+                height: 36,
+                borderRadius: 18,
+                overflow: "hidden",
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: isToday ? "#3b82f6" : "transparent",
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 12,
+                  fontWeight: isToday ? "800" : "600",
+                  color: isToday ? "#fff" : isDark ? "#d4d4d4" : "#525252",
+                }}
+              >
+                {DAY_LABELS[dayIdx]}
+              </Text>
+              <Text
+                style={{
+                  fontSize: 11,
+                  fontWeight: isToday ? "700" : "500",
+                  fontVariant: ["tabular-nums"],
+                  color: isToday ? "#fff" : isDark ? "#a3a3a3" : "#737373",
+                }}
+              >
+                {dayNumbers[dayIdx]}
+              </Text>
+            </View>
+          ) : (
+            <Text
+              style={{
+                fontSize: 12,
+                fontWeight: isToday ? "800" : "600",
+                color: isToday ? "#3b82f6" : isDark ? "#d4d4d4" : "#525252",
+              }}
+            >
+              {DAY_LABELS[dayIdx]}
+            </Text>
+          )}
         </View>
 
         <View style={{ flex: 1 }}>
@@ -332,7 +383,39 @@ export function Schedule({
     <View style={{ flex: 1 }}>
       <View style={{ flex: 1, flexDirection: "row" }}>
         <View style={{ width: SIDEBAR_WIDTH }}>
-          <View style={{ height: HEADER_HEIGHT }} />
+          <View
+            style={{
+              height: headerHeight,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            {showDates && monthLabel ? (
+              <View style={{ alignItems: "center" }}>
+                <Text
+                  style={{
+                    fontSize: 13,
+                    fontWeight: "600",
+                    fontVariant: ["tabular-nums"],
+                    textAlign: "center",
+                    color: isDark ? "#a3a3a3" : "#737373",
+                  }}
+                >
+                  {monthLabel.split("\n")[0]}
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 8,
+                    lineHeight: 10,
+                    textAlign: "center",
+                    color: isDark ? "#a3a3a3" : "#737373",
+                  }}
+                >
+                  月
+                </Text>
+              </View>
+            ) : null}
+          </View>
           <View style={{ flex: 1 }}>
             {layout.sidebarLabels.map((sl) => {
               const topVal = layout.sectionTop[sl.firstSection];
@@ -354,7 +437,7 @@ export function Schedule({
                   <Text
                     style={{
                       fontSize: 11,
-                      color: isDark ? "#737373" : "#a3a3a3",
+                      color: isDark ? "#a3a3a3" : "#737373",
                       textAlign: "center",
                       lineHeight: 16,
                     }}
@@ -467,8 +550,13 @@ export function Schedule({
                 />
                 <DetailRow
                   icon="time-outline"
-                  label="节次"
-                  value={`第 ${selected.sectionStart}-${selected.sectionEnd} 节`}
+                  label="时间"
+                  value={
+                    formatCourseSectionTimeRange(
+                      selected.sectionStart,
+                      selected.sectionEnd,
+                    ) || `第 ${selected.sectionStart}-${selected.sectionEnd} 节`
+                  }
                   isDark={isDark}
                 />
               </View>

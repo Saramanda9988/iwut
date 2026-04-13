@@ -1,5 +1,5 @@
 import { LinearGradient } from "expo-linear-gradient";
-import { useRef } from "react";
+import { useCallback, useRef } from "react";
 import {
   FlatList,
   NativeScrollEvent,
@@ -7,6 +7,8 @@ import {
   Text,
   View,
 } from "react-native";
+
+import { useHaptics } from "@/hooks/use-haptics";
 
 export function ScrollPicker({
   items,
@@ -23,11 +25,21 @@ export function ScrollPicker({
 }>) {
   const padding = Math.floor(visibleCount / 2);
   const listRef = useRef<FlatList>(null);
+  const lastSnapIndex = useRef(selectedIndex);
+  const haptic = useHaptics();
 
-  const handleScrollEnd = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const index = Math.round(e.nativeEvent.contentOffset.y / itemHeight);
-    onSelect(Math.max(0, Math.min(index, items.length - 1)));
-  };
+  const handleScroll = useCallback(
+    (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+      const snapIndex = Math.round(e.nativeEvent.contentOffset.y / itemHeight);
+      const clamped = Math.max(0, Math.min(snapIndex, items.length - 1));
+      if (clamped !== lastSnapIndex.current) {
+        lastSnapIndex.current = clamped;
+        haptic();
+        onSelect(clamped);
+      }
+    },
+    [itemHeight, items.length, haptic, onSelect],
+  );
 
   return (
     <View style={{ height: itemHeight * visibleCount }}>
@@ -46,7 +58,8 @@ export function ScrollPicker({
           index,
         })}
         contentContainerStyle={{ paddingVertical: itemHeight * padding }}
-        onMomentumScrollEnd={handleScrollEnd}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
         renderItem={({ item, index }) => (
           <View
             style={{ height: itemHeight }}

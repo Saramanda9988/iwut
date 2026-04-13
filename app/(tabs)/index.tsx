@@ -12,6 +12,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { DAY_LABELS } from "@/components/layout/schedule";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+import {
+  formatCourseSectionTimeRange,
+  SECTION_TIMES,
+} from "@/services/course-time";
 import { getCurrentDayOfWeek, getCurrentWeek, isVacation } from "@/lib/date";
 import type { Course } from "@/store/course";
 import { useCourseStore } from "@/store/course";
@@ -28,31 +32,6 @@ const GREETINGS: { start: number; end: number; title: string; sub: string }[] =
     { start: 19, end: 23, title: "晚上好", sub: "忙完了就早点休息" },
     { start: 23, end: 5, title: "夜深了", sub: "熬夜伤身，早点睡哦" },
   ];
-
-const SECTION_TIMES: Record<
-  number,
-  [start: string, end: string, startMin: number, endMin: number]
-> = {
-  1: ["8:00", "8:45", 480, 525],
-  2: ["8:50", "9:35", 530, 575],
-  3: ["9:55", "10:40", 595, 640],
-  4: ["10:45", "11:30", 645, 690],
-  5: ["11:35", "12:20", 695, 740],
-  6: ["14:00", "14:45", 840, 885],
-  7: ["14:50", "15:35", 890, 935],
-  8: ["15:40", "16:25", 940, 985],
-  9: ["16:45", "17:30", 1005, 1050],
-  10: ["17:35", "18:20", 1055, 1100],
-  11: ["19:00", "19:45", 1140, 1185],
-  12: ["19:50", "20:35", 1190, 1235],
-  13: ["20:40", "21:25", 1240, 1285],
-};
-
-function getCourseTimeRange(course: Course): string {
-  const start = SECTION_TIMES[course.sectionStart]?.[0] ?? "";
-  const end = SECTION_TIMES[course.sectionEnd]?.[1] ?? "";
-  return start && end ? `${start} - ${end}` : "";
-}
 
 function isCourseFinished(course: Course): boolean {
   const now = new Date();
@@ -434,7 +413,10 @@ function CourseCard({
         >
           <ChipInfo
             icon="time-outline"
-            text={getCourseTimeRange(course)}
+            text={formatCourseSectionTimeRange(
+              course.sectionStart,
+              course.sectionEnd,
+            )}
             color={subColor}
           />
           <ChipInfo
