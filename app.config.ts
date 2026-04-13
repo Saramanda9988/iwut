@@ -4,7 +4,7 @@ import type { ExpoConfig } from "expo/config";
 const IS_DEV = process.env.EAS_BUILD_PROFILE === "development";
 
 const config: ExpoConfig = {
-  name: "掌上吾理",
+  name: IS_DEV ? "掌上吾理 Pro (Dev)" : "掌上吾理 Pro",
   slug: "iwut",
   version: "0.1.3",
   runtimeVersion: {
