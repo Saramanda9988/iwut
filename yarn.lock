@@ -966,13 +966,13 @@
   dependencies:
     node-forge "^1.3.3"
 
-"@expo/config-plugins@~55.0.7":
-  version "55.0.7"
-  resolved "https://registry.npmmirror.com/@expo/config-plugins/-/config-plugins-55.0.7.tgz#f8fd8bee58d83ef5d6d3cb416ac6b26abdfded19"
-  integrity sha512-XZUoDWrsHEkH3yasnDSJABM/UxP5a1ixzRwU/M+BToyn/f0nTrSJJe/Ay/FpxkI4JSNz2n0e06I23b2bleXKVA==
+"@expo/config-plugins@^55.0.8", "@expo/config-plugins@~55.0.8":
+  version "55.0.8"
+  resolved "https://registry.npmmirror.com/@expo/config-plugins/-/config-plugins-55.0.8.tgz#1b3f2b06b941b113ddc920be179b90c86eb82ef9"
+  integrity sha512-8WfWTRntTCcowfOS+tHdB0z98gKetTwktg4G5TWkCkXVa8Jt1NUnvzaaU4UHk2vbR2U4N84RyZJFizSwfF6C9g==
   dependencies:
     "@expo/config-types" "^55.0.5"
-    "@expo/json-file" "~10.0.12"
+    "@expo/json-file" "~10.0.13"
     "@expo/plist" "^0.5.2"
     "@expo/sdk-runtime-versions" "^1.0.0"
     chalk "^4.1.2"
@@ -985,13 +985,13 @@
     xcode "^3.0.1"
     xml2js "0.6.0"
 
-"@expo/config-plugins@~55.0.8":
-  version "55.0.8"
-  resolved "https://registry.npmmirror.com/@expo/config-plugins/-/config-plugins-55.0.8.tgz#1b3f2b06b941b113ddc920be179b90c86eb82ef9"
-  integrity sha512-8WfWTRntTCcowfOS+tHdB0z98gKetTwktg4G5TWkCkXVa8Jt1NUnvzaaU4UHk2vbR2U4N84RyZJFizSwfF6C9g==
+"@expo/config-plugins@~55.0.7":
+  version "55.0.7"
+  resolved "https://registry.npmmirror.com/@expo/config-plugins/-/config-plugins-55.0.7.tgz#f8fd8bee58d83ef5d6d3cb416ac6b26abdfded19"
+  integrity sha512-XZUoDWrsHEkH3yasnDSJABM/UxP5a1ixzRwU/M+BToyn/f0nTrSJJe/Ay/FpxkI4JSNz2n0e06I23b2bleXKVA==
   dependencies:
     "@expo/config-types" "^55.0.5"
-    "@expo/json-file" "~10.0.13"
+    "@expo/json-file" "~10.0.12"
     "@expo/plist" "^0.5.2"
     "@expo/sdk-runtime-versions" "^1.0.0"
     chalk "^4.1.2"
@@ -3876,6 +3876,13 @@ expo-dev-menu@55.0.19:
   dependencies:
     expo-dev-menu-interface "55.0.2"
 
+expo-device@~55.0.15:
+  version "55.0.15"
+  resolved "https://registry.npmmirror.com/expo-device/-/expo-device-55.0.15.tgz#a95008840c183b9bd6d74b40c3d10d8706baa8ca"
+  integrity sha512-vXy4U/IeYI+zHGG45Ap6J7EuyQmkstyo8I+/5YGr5q2zmqLBo6SWE62wii8i9hLHheHn6AtF9UPrSWAREJrE8A==
+  dependencies:
+    ua-parser-js "^0.7.33"
+
 expo-eas-client@~55.0.5:
   version "55.0.5"
   resolved "https://registry.npmmirror.com/expo-eas-client/-/expo-eas-client-55.0.5.tgz#36e09e6c9e161eb72c17ce1657af210f6a9e4389"
@@ -4011,6 +4018,15 @@ expo-server@^55.0.7:
   version "55.0.7"
   resolved "https://registry.npmmirror.com/expo-server/-/expo-server-55.0.7.tgz#51bdb292daa87194ce19fe163e32d34b704d50b9"
   integrity sha512-Cc1btFyPsD9P4DT2xd1pG/uR96TLVMx0W+dPm9Gjk1uDV9xuzvMcUsY7nf9bt4U5pGyWWkCXmPJcKwWfdl51Pw==
+
+expo-sharing@~55.0.18:
+  version "55.0.18"
+  resolved "https://registry.npmmirror.com/expo-sharing/-/expo-sharing-55.0.18.tgz#017334190b06c0e6c188f9de36e10da132fa39d6"
+  integrity sha512-Tqy4LXRLw/UEg5mT7BKhx8y4ReNz8fVldvhHJV5cesH3kRgEerHkYxVwid2vd7v34KnNp0RH1OqUyDlzZTQ9AQ==
+  dependencies:
+    "@expo/config-plugins" "^55.0.8"
+    "@expo/config-types" "^55.0.5"
+    "@expo/plist" "^0.5.2"
 
 expo-splash-screen@~55.0.18:
   version "55.0.18"
@@ -4562,7 +4578,7 @@ inflight@^1.0.4:
     once "^1.3.0"
     wrappy "1"
 
-inherits@2, inherits@~2.0.3, inherits@~2.0.4:
+inherits@2, inherits@^2.0.3, inherits@~2.0.3, inherits@~2.0.4:
   version "2.0.4"
   resolved "https://registry.npmmirror.com/inherits/-/inherits-2.0.4.tgz#0fa2c64f932917c3433a0ded55363aae37416b7c"
   integrity sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==
@@ -4582,6 +4598,14 @@ invariant@2.2.4, invariant@^2.2.4:
   integrity sha512-phJfQVBuaJM5raOpJjSfkiD6BpbCE4Ns//LaXl6wGYtUBY83nWS6Rf9tXm2e8VaK60JEjYldbPif/A2B1C2gNA==
   dependencies:
     loose-envify "^1.0.0"
+
+is-arguments@^1.0.4:
+  version "1.2.0"
+  resolved "https://registry.npmmirror.com/is-arguments/-/is-arguments-1.2.0.tgz#ad58c6aecf563b78ef2bf04df540da8f5d7d8e1b"
+  integrity sha512-7bVbi0huj/wrIAOzb8U1aszg9kdi3KN/CyU19CTI7tAoZYEZoL9yCDXpbXN+uPsuWnP02cyug1gleqq+TU+YCA==
+  dependencies:
+    call-bound "^1.0.2"
+    has-tostringtag "^1.0.2"
 
 is-array-buffer@^3.0.4, is-array-buffer@^3.0.5:
   version "3.0.5"
@@ -4681,7 +4705,7 @@ is-fullwidth-code-point@^3.0.0:
   resolved "https://registry.npmmirror.com/is-fullwidth-code-point/-/is-fullwidth-code-point-3.0.0.tgz#f116f8064fe90b3f7844a38997c0b75051269f1d"
   integrity sha512-zymm5+u+sCsSWyD9qNaejV3DFvhCKclKdizYaJUuHA83RLjb7nSuGnddCHGv0hk+KY7BMAlsWeK4Ueg6EV6XQg==
 
-is-generator-function@^1.0.10:
+is-generator-function@^1.0.10, is-generator-function@^1.0.7:
   version "1.1.2"
   resolved "https://registry.npmmirror.com/is-generator-function/-/is-generator-function-1.1.2.tgz#ae3b61e3d5ea4e4839b90bad22b02335051a17d5"
   integrity sha512-upqt1SkGkODW9tsGNG5mtXTXtECizwtS2kA161M+gJPc1xdb/Ax629af6YrTwcOeQHbewrPNlE5Dx7kzvXTizA==
@@ -4761,7 +4785,7 @@ is-symbol@^1.0.4, is-symbol@^1.1.1:
     has-symbols "^1.1.0"
     safe-regex-test "^1.1.0"
 
-is-typed-array@^1.1.13, is-typed-array@^1.1.14, is-typed-array@^1.1.15:
+is-typed-array@^1.1.13, is-typed-array@^1.1.14, is-typed-array@^1.1.15, is-typed-array@^1.1.3:
   version "1.1.15"
   resolved "https://registry.npmmirror.com/is-typed-array/-/is-typed-array-1.1.15.tgz#4bfb4a45b61cee83a5a46fba778e4e8d59c0ce0b"
   integrity sha512-p3EcsicXjit7SaskXHs1hA91QxgTw46Fv6EFKKGS5DRFLD8yKnohjF3hxoju94b/OcMZoQukzpPpBE9uLVKzgQ==
@@ -6005,6 +6029,13 @@ react-native-css@^3.0.6:
     comment-json "^4.2.5"
     debug "^4.4.1"
 
+react-native-file-logger@^0.7.2:
+  version "0.7.2"
+  resolved "https://registry.npmmirror.com/react-native-file-logger/-/react-native-file-logger-0.7.2.tgz#b3d40efda0faedfb1eb194cb79d56f68a1a10596"
+  integrity sha512-ceGdSveNGwzUvzJtemi8I34Up1F41+NhoFWoxn2YSLl/hYQImkimAdMdbuY/XF2u562fagJ6jmOap1j1VpsMQA==
+  dependencies:
+    util "^0.12.5"
+
 react-native-gesture-handler@~2.30.0:
   version "2.30.1"
   resolved "https://registry.npmmirror.com/react-native-gesture-handler/-/react-native-gesture-handler-2.30.1.tgz#d930b8b8870cd2f5cc0c967acf94c8891ada42de"
@@ -6935,6 +6966,11 @@ typescript@~5.9.2:
   resolved "https://registry.npmmirror.com/typescript/-/typescript-5.9.3.tgz#5b4f59e15310ab17a216f5d6cf53ee476ede670f"
   integrity sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==
 
+ua-parser-js@^0.7.33:
+  version "0.7.41"
+  resolved "https://registry.npmmirror.com/ua-parser-js/-/ua-parser-js-0.7.41.tgz#9f6dee58c389e8afababa62a4a2dc22edb69a452"
+  integrity sha512-O3oYyCMPYgNNHuO7Jjk3uacJWZF8loBgwrfd/5LE/HyZ3lUIOdniQ7DNXJcIgZbwioZxk0fLfI4EVnetdiX5jg==
+
 unbox-primitive@^1.1.0:
   version "1.1.0"
   resolved "https://registry.npmmirror.com/unbox-primitive/-/unbox-primitive-1.1.0.tgz#8d9d2c9edeea8460c7f35033a88867944934d1e2"
@@ -7044,6 +7080,17 @@ use-sync-external-store@^1.5.0:
   version "1.6.0"
   resolved "https://registry.npmmirror.com/use-sync-external-store/-/use-sync-external-store-1.6.0.tgz#b174bfa65cb2b526732d9f2ac0a408027876f32d"
   integrity sha512-Pp6GSwGP/NrPIrxVFAIkOQeyw8lFenOHijQWkUTrDvrF4ALqylP2C/KCkeS9dpUM3KvYRQhna5vt7IL95+ZQ9w==
+
+util@^0.12.5:
+  version "0.12.5"
+  resolved "https://registry.npmmirror.com/util/-/util-0.12.5.tgz#5f17a6059b73db61a875668781a1c2b136bd6fbc"
+  integrity sha512-kZf/K6hEIrWHI6XqOFUiiMa+79wE/D8Q+NCNAWclkyg3b4d2k7s0QGepNjiABc+aR3N1PAyHL7p6UcLY6LmrnA==
+  dependencies:
+    inherits "^2.0.3"
+    is-arguments "^1.0.4"
+    is-generator-function "^1.0.7"
+    is-typed-array "^1.1.3"
+    which-typed-array "^1.1.2"
 
 utils-merge@1.0.1:
   version "1.0.1"
@@ -7159,7 +7206,7 @@ which-collection@^1.0.2:
     is-weakmap "^2.0.2"
     is-weakset "^2.0.3"
 
-which-typed-array@^1.1.16, which-typed-array@^1.1.19:
+which-typed-array@^1.1.16, which-typed-array@^1.1.19, which-typed-array@^1.1.2:
   version "1.1.20"
   resolved "https://registry.npmmirror.com/which-typed-array/-/which-typed-array-1.1.20.tgz#3fdb7adfafe0ea69157b1509f3a1cd892bd1d122"
   integrity sha512-LYfpUkmqwl0h9A2HL09Mms427Q1RZWuOHsukfVcKRq9q95iQxdw0ix1JQrqbcDR9PH1QDwf5Qo8OZb5lksZ8Xg==

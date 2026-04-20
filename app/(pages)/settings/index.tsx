@@ -1,7 +1,11 @@
+import Constants from "expo-constants";
+import { Directory, File, Paths } from "expo-file-system";
 import { Image } from "expo-image";
 import { Stack } from "expo-router";
+import * as Sharing from "expo-sharing";
 import { useState } from "react";
 import { ActivityIndicator, ScrollView, Switch } from "react-native";
+import { FileLogger } from "react-native-file-logger";
 import Toast from "react-native-toast-message";
 
 import { ConfirmSheet } from "@/components/ui/confirm-sheet";
@@ -16,6 +20,7 @@ export default function SettingsScreen() {
 
   const [clearVisible, setClearVisible] = useState(false);
   const [clearing, setClearing] = useState(false);
+  const [exporting, setExporting] = useState(false);
 
   const handleClearCache = async () => {
     setClearVisible(false);
@@ -23,16 +28,15 @@ export default function SettingsScreen() {
     try {
       await Image.clearDiskCache();
 
-      const { Directory, File, Paths } = await import("expo-file-system/next");
       const docDir = new Directory(Paths.document);
       const currentBgUri = useScheduleStore.getState().backgroundImageUri;
-      for (const name of docDir.listAsRecords()) {
+      for (const entry of docDir.listAsRecords()) {
         if (
-          name.type === "file" &&
-          name.name.startsWith("schedule-bg-") &&
-          name.name.endsWith(".jpg")
+          !entry.isDirectory &&
+          entry.uri.includes("schedule-bg-") &&
+          entry.uri.endsWith(".jpg")
         ) {
-          const file = new File(docDir, name.name);
+          const file = new File(entry.uri);
           if (file.uri !== currentBgUri) {
             file.delete();
           }
@@ -56,6 +60,62 @@ export default function SettingsScreen() {
       });
     } finally {
       setClearing(false);
+    }
+  };
+
+  const handleExportLogs = async () => {
+    setExporting(true);
+
+    try {
+      const paths = await FileLogger.getLogFilePaths();
+
+      if (paths.length === 0) {
+        Toast.show({
+          type: "info",
+          text1: "暂无日志",
+          position: "bottom",
+        });
+        return;
+      }
+
+      const Device = await import("expo-device");
+
+      const version = Constants.expoConfig?.version;
+      const commit = Constants.expoConfig?.extra?.commit;
+
+      const header = [
+        `Version: ${version}, Commit: ${commit}`,
+        `Device: ${Device.manufacturer} ${Device.modelName} ${Device.modelId}`,
+        `OS: ${Device.osName} ${Device.osVersion} ${Device.osBuildId} ${Device.osInternalBuildId} ${Device.osBuildFingerprint}`,
+        `Architecture: ${Device.supportedCpuArchitectures}`,
+        `Memory: ${Device.totalMemory}`,
+        `Time: ${new Date().toISOString()}`,
+        "",
+      ].join("\n");
+
+      let log = header;
+      for (const path of paths) {
+        const file = new File(path);
+        const content = file.text();
+        log += content + "\n";
+      }
+
+      const file = new File(new Directory(Paths.cache), "iwut-logs.txt");
+      await file.write(log);
+      await Sharing.shareAsync(file.uri, {
+        UTI: "public.plain-text",
+        mimeType: "text/plain",
+        dialogTitle: "导出日志",
+      });
+    } catch (e) {
+      reportError(e, { module: "settings", action: "export-logs" });
+      Toast.show({
+        type: "error",
+        text1: "导出失败",
+        position: "bottom",
+      });
+    } finally {
+      setExporting(false);
     }
   };
 
@@ -89,6 +149,14 @@ export default function SettingsScreen() {
             showArrow={false}
             right={clearing ? <ActivityIndicator size="small" /> : undefined}
             onPress={() => setClearVisible(true)}
+          />
+          <MenuItem
+            icon="description"
+            iconBg="#007AFF"
+            label="导出日志"
+            showArrow={false}
+            right={exporting ? <ActivityIndicator size="small" /> : undefined}
+            onPress={handleExportLogs}
           />
         </MenuGroup>
       </ScrollView>

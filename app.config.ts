@@ -49,6 +49,7 @@ const config: ExpoConfig = {
     "expo-web-browser",
     "expo-image",
     "expo-secure-store",
+    "expo-sharing",
     [
       "expo-splash-screen",
       {

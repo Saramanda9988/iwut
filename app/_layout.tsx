@@ -1,12 +1,20 @@
 import * as Sentry from "@sentry/react-native";
+import { FileLogger } from "react-native-file-logger";
 
 import { SENTRY_DSN } from "@/constants/api";
 
+// 日志记录需要提前初始化，便于捕获后续 import 中可能出现的错误
 Sentry.init({
   dsn: SENTRY_DSN,
   enableAutoSessionTracking: false,
   tracesSampleRate: 0,
   enabled: !__DEV__,
+});
+
+FileLogger.configure({
+  dailyRolling: true,
+  maximumFileSize: 1024 * 512,
+  captureConsole: true,
 });
 
 /* eslint-disable import/first */
