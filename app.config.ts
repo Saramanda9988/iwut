@@ -8,7 +8,7 @@ const COMMIT = execSync("git rev-parse --short HEAD").toString().trim();
 const config: ExpoConfig = {
   name: IS_DEV ? "掌上吾理 Pro (Dev)" : "掌上吾理 Pro",
   slug: "iwut",
-  version: "0.1.4",
+  version: "0.1.5",
   runtimeVersion: {
     policy: "appVersion",
   },
