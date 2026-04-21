@@ -9,11 +9,13 @@ import { zustandStorage } from "@/lib/storage";
 
 interface ScheduleStore {
   scrollWeekend: boolean;
+  showMiddaySections: boolean;
   colorPalette: ColorPalette;
   customPalettes: ColorPalette[];
   courseColorOverrides: Record<string, string>;
   backgroundImageUri: string | null;
   setScrollWeekend: (value: boolean) => void;
+  setShowMiddaySections: (value: boolean) => void;
   setColorPalette: (palette: ColorPalette) => void;
   addCustomPalette: (palette: ColorPalette) => void;
   removeCustomPalette: (name: string) => void;
@@ -26,11 +28,14 @@ export const useScheduleStore = create<ScheduleStore>()(
   persist(
     (set, get) => ({
       scrollWeekend: true,
+      showMiddaySections: false,
       colorPalette: BUILTIN_PALETTES[0],
       customPalettes: [],
       courseColorOverrides: {},
       backgroundImageUri: null,
       setScrollWeekend: (value: boolean) => set({ scrollWeekend: value }),
+      setShowMiddaySections: (value: boolean) =>
+        set({ showMiddaySections: value }),
       setColorPalette: (palette: ColorPalette) =>
         set({ colorPalette: palette }),
       addCustomPalette: (palette: ColorPalette) =>

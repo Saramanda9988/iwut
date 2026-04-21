@@ -6,6 +6,7 @@ import { zustandStorage } from "@/lib/storage";
 export interface Course {
   name: string; // 课程名
   room: string; // 教室
+  teacher: string; // 教师
   weekStart: number; // 开始周数
   weekEnd: number; // 结束周数
   day: number; // 星期几

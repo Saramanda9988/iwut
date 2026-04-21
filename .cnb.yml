@@ -2,7 +2,7 @@ $:
   vscode:
     - runner:
         cpus: 16
-      docker: 
+      docker:
         image: docker.cnb.cool/zhxycn/env:latest
       services:
         - vscode

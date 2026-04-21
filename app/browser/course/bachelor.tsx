@@ -6,7 +6,6 @@ import { WebView, type WebViewNavigation } from "react-native-webview";
 
 import { useZhlgdAutoLogin } from "@/hooks/use-zhlgd-autologin";
 import { reportError } from "@/lib/report";
-import { getTermStart } from "@/services/get-course";
 import { type Course, useCourseStore } from "@/store/course";
 
 const LOGIN_URL =
@@ -15,155 +14,143 @@ const LOGIN_URL =
 const HOME_PREFIX =
   "https://jwxt.whut.edu.cn/jwapp/sys/homeapp/home/index.html";
 
-const COURSE_FETCH_SCRIPT = `(async function() {
+const FETCH_SCRIPT = `(async function() {
   try {
     await fetch(
       '/jwapp/sys/homeapp/api/home/changeAppRole.do?appRole=ef212c48c8f84be79acbd9d81b090f51',
       {method:'POST', credentials:'include', headers:{'Content-Type':'application/x-www-form-urlencoded'}}
     );
-    var termResp = await fetch('/jwapp/sys/homeapp/api/home/kb/xnxq.do', {
+    var ud = ((await (await fetch('/jwapp/sys/homeapp/api/home/currentUser.do', {
       method:'GET', credentials:'include', headers:{'Fetch-Api':'true'}
-    });
-    var termList = (await termResp.json()).datas || [];
-    var term = '';
-    for (var i = 0; i < termList.length; i++) {
-      if (termList[i].selected) { term = termList[i].itemCode; break; }
-    }
-    if (!term) {
-      var now = new Date(), y = now.getFullYear(), m = now.getMonth() + 1;
-      var sy = m >= 9 ? y : y - 1;
-      var sem = m >= 9 ? 1 : (m >= 2 ? 2 : 1);
-      term = sy + '-' + (sy + 1) + '-' + sem;
-    }
-    var courseResp = await fetch(
-      '/jwapp/sys/homeapp/api/home/student/courses.do?termCode=' + encodeURIComponent(term),
-      {method:'GET', credentials:'include', headers:{'Fetch-Api':'true'}}
-    );
-    var courseData = await courseResp.json();
-    if (!courseData.datas || courseData.datas.length === 0) {
-      window.ReactNativeWebView.postMessage(JSON.stringify({type:'error', message:'当前学期('+term+')无课程数据'}));
+    })).json()).datas) || {};
+    var xh = ud.userId || '';
+    var term = (ud.welcomeInfo && ud.welcomeInfo.xnxqdm) || '';
+    var log = function(s){ window.ReactNativeWebView.postMessage(JSON.stringify({type:'debug', message:s})); };
+    log('user=' + xh + ' term=' + term);
+    if (!xh || !term) {
+      window.ReactNativeWebView.postMessage(JSON.stringify({type:'error', message:'获取用户信息失败'}));
       return;
     }
-    window.ReactNativeWebView.postMessage(JSON.stringify({type:'courses', data:courseData.datas}));
-  } catch(e) {
-    window.ReactNativeWebView.postMessage(JSON.stringify({type:'error', message:e.message||''}));
-  }
-})(); true;`;
-
-const DAY_MAP: Record<string, number> = {
-  一: 1,
-  二: 2,
-  三: 3,
-  四: 4,
-  五: 5,
-  六: 6,
-  日: 7,
-  天: 7,
-};
-
-function parseClassDateAndPlace(str: string): Omit<Course, "name">[] {
-  const re =
-    /\[([^\]]+)\]\s*星期([一二三四五六日天])\s*第(\d+)-(\d+)节\s*([^\[;]*)/g;
-  const results: Omit<Course, "name">[] = [];
-  let m: RegExpExecArray | null;
-
-  while ((m = re.exec(str)) !== null) {
-    const day = DAY_MAP[m[2]] ?? 0;
-    const sectionStart = parseInt(m[3], 10);
-    const sectionEnd = parseInt(m[4], 10);
-    const room = m[5].trim();
-
-    for (const part of m[1].split(",")) {
-      const wm = part.match(/(\d+)(?:-(\d+))?/);
-      if (wm) {
-        results.push({
-          room,
-          day,
-          sectionStart,
-          sectionEnd,
-          weekStart: parseInt(wm[1], 10),
-          weekEnd: wm[2] ? parseInt(wm[2], 10) : parseInt(wm[1], 10),
+    var resp = await fetch('/jwapp/sys/kcbcxby/modules/xskcb/cxxskcb.do', {
+      method:'POST', credentials:'include',
+      headers:{
+        'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8',
+        'X-Requested-With':'XMLHttpRequest',
+        'Accept':'application/json, text/javascript, */*; q=0.01'
+      },
+      body:'XH=' + encodeURIComponent(xh) + '&XNXQDM=' + encodeURIComponent(term)
+    });
+    var text = await resp.text();
+    log(text.substring(0, 2000));
+    var data = JSON.parse(text);
+    var rows = data.datas && data.datas.cxxskcb && data.datas.cxxskcb.rows;
+    log('rows=' + (rows ? rows.length : 0));
+    if (!rows || !rows.length) {
+      window.ReactNativeWebView.postMessage(JSON.stringify({type:'error', message:'当前学期(' + term + ')无课程数据'}));
+      return;
+    }
+    var courses = [];
+    for (var i = 0; i < rows.length; i++) {
+      var r = rows[i], re = /1+/g, m;
+      while ((m = re.exec(r.SKZC || '')) !== null) {
+        courses.push({
+          name: r.KCM || '', room: r.JASMC || '', teacher: r.SKJS || '',
+          day: r.SKXQ, sectionStart: r.KSJC, sectionEnd: r.JSJC,
+          weekStart: m.index + 1, weekEnd: m.index + m[0].length
         });
       }
     }
+    var tp = term.split('-');
+    var ljcResp = await fetch('/jwapp/sys/kcbcxby/modules/xskcb/cxxljc.do', {
+      method:'POST', credentials:'include',
+      headers:{
+        'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8',
+        'X-Requested-With':'XMLHttpRequest'
+      },
+      body:'XN=' + encodeURIComponent(tp[0] + '-' + tp[1]) + '&XQ=' + encodeURIComponent(tp[2])
+    });
+    var ljcData = await ljcResp.json();
+    var ljcRows = ljcData.datas && ljcData.datas.cxxljc && ljcData.datas.cxxljc.rows;
+    var termStart = (ljcRows && ljcRows[0] && ljcRows[0].XQKSRQ) ? ljcRows[0].XQKSRQ.split(' ')[0] : '';
+    log('parsed ' + courses.length + ' courses, termStart=' + termStart);
+    window.ReactNativeWebView.postMessage(JSON.stringify({type:'courses', data: courses, termStart: termStart}));
+  } catch(e) {
+    window.ReactNativeWebView.postMessage(JSON.stringify({type:'error', message: e.message || ''}));
   }
-  return results;
-}
+})(); true;`;
 
 export default function BachelorCourseScreen() {
-  const isImporting = useRef(false);
+  const injected = useRef(false);
   const webview = useRef<WebView>(null);
   const { onLoadEnd: autoLoginOnLoadEnd } = useZhlgdAutoLogin(webview);
 
-  const handleLoadEnd = (event: { nativeEvent: { url: string } }) => {
-    autoLoginOnLoadEnd(event);
-  };
-
   const handleNavStateChange = (state: WebViewNavigation) => {
-    if (
-      !isImporting.current &&
-      !state.loading &&
-      state.url.startsWith(HOME_PREFIX)
-    ) {
-      isImporting.current = true;
-      setTimeout(() => {
-        webview.current?.injectJavaScript(COURSE_FETCH_SCRIPT);
-      }, 1500);
+    if (state.loading) return;
+    if (!injected.current && state.url.startsWith(HOME_PREFIX)) {
+      injected.current = true;
+      webview.current?.injectJavaScript(FETCH_SCRIPT);
     }
   };
 
   const handleMessage = (event: { nativeEvent: { data: string } }) => {
+    let msg: any;
     try {
-      const msg = JSON.parse(event.nativeEvent.data);
+      msg = JSON.parse(event.nativeEvent.data);
+    } catch {
+      return;
+    }
+    if (!msg?.type) return;
 
-      if (msg.type === "error") {
-        isImporting.current = false;
-        reportError(new Error(msg.message), { module: "course-bachelor" });
+    if (msg.type === "debug") {
+      console.log(msg.message);
+      return;
+    }
+
+    if (msg.type === "error") {
+      injected.current = false;
+      reportError(new Error(msg.message), { module: "course-bachelor" });
+      Toast.show({
+        type: "error",
+        text1: "导入失败",
+        text2: msg.message || "请检查网络连接并重试",
+        position: "bottom",
+      });
+      return;
+    }
+
+    if (msg.type === "courses") {
+      const courses: Course[] = (msg.data as any[]).map((c: any) => ({
+        name: c.name,
+        room: c.room,
+        teacher: c.teacher,
+        day: c.day,
+        sectionStart: c.sectionStart,
+        sectionEnd: c.sectionEnd,
+        weekStart: c.weekStart,
+        weekEnd: c.weekEnd,
+      }));
+
+      if (courses.length === 0) {
+        injected.current = false;
         Toast.show({
           type: "error",
           text1: "导入失败",
-          text2: msg.message || "请检查网络连接并重试",
+          text2: "课表数据解析失败",
           position: "bottom",
         });
         return;
       }
 
-      if (msg.type === "courses") {
-        const courses: Course[] = (msg.data as any[]).flatMap((row: any) => {
-          const parsed = parseClassDateAndPlace(row.classDateAndPlace ?? "");
-          return parsed.map((c) => ({
-            ...c,
-            name: row.courseName ?? "",
-          }));
-        });
-
-        if (courses.length === 0) {
-          isImporting.current = false;
-          Toast.show({
-            type: "error",
-            text1: "导入失败",
-            text2: "课表数据解析失败",
-            position: "bottom",
-          });
-          return;
-        }
-
-        const store = useCourseStore.getState();
-        store.setCourses(courses);
-        getTermStart()
-          .then((ts) => store.setTermStart(ts))
-          .catch(() => {});
-        Toast.show({
-          type: "success",
-          text1: "导入成功",
-          text2: "好耶！",
-          position: "bottom",
-        });
-        router.back();
-      }
-    } catch (e) {
-      reportError(e, { module: "course-bachelor" });
-      isImporting.current = false;
+      const store = useCourseStore.getState();
+      store.setCourses(courses);
+      if (msg.termStart) store.setTermStart(msg.termStart);
+      Toast.show({
+        type: "success",
+        text1: "导入成功",
+        text2: "好耶！",
+        position: "bottom",
+      });
+      router.back();
     }
   };
 
@@ -178,7 +165,7 @@ export default function BachelorCourseScreen() {
         domStorageEnabled
         thirdPartyCookiesEnabled
         originWhitelist={["*"]}
-        onLoadEnd={handleLoadEnd}
+        onLoadEnd={autoLoginOnLoadEnd}
         onNavigationStateChange={handleNavStateChange}
         onMessage={handleMessage}
         ref={webview}

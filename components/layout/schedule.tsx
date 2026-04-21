@@ -26,18 +26,40 @@ export const DAY_LABELS = [
   "周日",
 ];
 
-const SECTION_GROUPS: number[][] = [
+interface SidebarLabel {
+  label: string;
+  firstSection: number;
+  lastSection: number;
+}
+
+const SECTION_GROUPS_FULL: number[][] = [
   [1, 2],
   [3, 4, 5],
   [6, 7],
-  [8, 9, 10],
-  [11, 12, 13],
+  [8, 9, 10, 11, 12],
+  [13],
+  [14, 15, 16],
 ];
 
-const SIDEBAR_LABELS = [
-  { label: "早\n上", firstSection: 1, lastSection: 5 },
-  { label: "下\n午", firstSection: 6, lastSection: 10 },
-  { label: "晚\n上", firstSection: 11, lastSection: 13 },
+const SIDEBAR_LABELS_FULL: SidebarLabel[] = [
+  { label: "上\n午", firstSection: 1, lastSection: 5 },
+  { label: "中\n课", firstSection: 6, lastSection: 7 },
+  { label: "下\n午", firstSection: 8, lastSection: 12 },
+  { label: "晚\n课", firstSection: 13, lastSection: 13 },
+  { label: "晚\n上", firstSection: 14, lastSection: 16 },
+];
+
+const SECTION_GROUPS_COMPACT: number[][] = [
+  [1, 2],
+  [3, 4, 5],
+  [8, 9, 10, 11, 12],
+  [14, 15, 16],
+];
+
+const SIDEBAR_LABELS_COMPACT: SidebarLabel[] = [
+  { label: "上\n午", firstSection: 1, lastSection: 5 },
+  { label: "下\n午", firstSection: 8, lastSection: 12 },
+  { label: "晚\n上", firstSection: 14, lastSection: 16 },
 ];
 
 const GAP_UNITS = 0;
@@ -88,12 +110,6 @@ function buildDayCourses(courses: Course[]): Course[][] {
   return days;
 }
 
-interface SidebarLabel {
-  label: string;
-  firstSection: number;
-  lastSection: number;
-}
-
 interface LayoutInfo {
   sectionTop: Record<number, number>;
   sectionPct: number;
@@ -142,6 +158,7 @@ export function Schedule({
 
   const haptic = useHaptics();
   const scrollWeekend = useScheduleStore((s) => s.scrollWeekend);
+  const showMidday = useScheduleStore((s) => s.showMiddaySections);
   const colorPalette = useScheduleStore((s) => s.colorPalette);
   const courseColorOverrides = useScheduleStore((s) => s.courseColorOverrides);
   const backgroundImageUri = useScheduleStore((s) => s.backgroundImageUri);
@@ -149,8 +166,11 @@ export function Schedule({
   const hasBgImage = !!backgroundImageUri;
 
   const layout = useMemo(
-    () => computeLayout(SECTION_GROUPS, SIDEBAR_LABELS),
-    [],
+    () =>
+      showMidday
+        ? computeLayout(SECTION_GROUPS_FULL, SIDEBAR_LABELS_FULL)
+        : computeLayout(SECTION_GROUPS_COMPACT, SIDEBAR_LABELS_COMPACT),
+    [showMidday],
   );
 
   const colorMap = useMemo(
@@ -542,6 +562,14 @@ export function Schedule({
                   value={selected.room}
                   isDark={isDark}
                 />
+                {selected.teacher ? (
+                  <DetailRow
+                    icon="person-outline"
+                    label="教师"
+                    value={selected.teacher}
+                    isDark={isDark}
+                  />
+                ) : null}
                 <DetailRow
                   icon="calendar-outline"
                   label="周次"

@@ -19,7 +19,7 @@ import { type Course, useCourseStore } from "@/store/course";
 
 const DAY_OPTIONS = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"];
 const MAX_WEEK = 20;
-const MAX_SECTION = 13;
+const MAX_SECTION = 16;
 
 interface TimeSlot {
   day: number;
@@ -206,6 +206,7 @@ export default function AddEditCourseScreen() {
         addCourse({
           name: trimmedName,
           room: slot.room.trim(),
+          teacher: "",
           day: slot.day,
           weekStart: ws,
           weekEnd: we,

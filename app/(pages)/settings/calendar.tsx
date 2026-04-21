@@ -18,6 +18,8 @@ export default function CalendarSettingsScreen() {
 
   const scrollWeekend = useScheduleStore((s) => s.scrollWeekend);
   const setScrollWeekend = useScheduleStore((s) => s.setScrollWeekend);
+  const showMidday = useScheduleStore((s) => s.showMiddaySections);
+  const setShowMidday = useScheduleStore((s) => s.setShowMiddaySections);
   const colorPalette = useScheduleStore((s) => s.colorPalette);
   const backgroundImageUri = useScheduleStore((s) => s.backgroundImageUri);
   const setBackgroundImageUri = useScheduleStore(
@@ -92,6 +94,13 @@ export default function CalendarSettingsScreen() {
             right={
               <Switch value={scrollWeekend} onValueChange={setScrollWeekend} />
             }
+          />
+          <MenuItem
+            icon="wb-sunny"
+            iconBg="#FF9500"
+            label="显示中课"
+            showArrow={false}
+            right={<Switch value={showMidday} onValueChange={setShowMidday} />}
           />
         </MenuGroup>
 
