@@ -1,8 +1,10 @@
 import Constants from "expo-constants";
+import * as Device from "expo-device";
 import { Directory, File, Paths } from "expo-file-system";
 import { Image } from "expo-image";
 import { Stack } from "expo-router";
 import * as Sharing from "expo-sharing";
+import JSZip from "jszip";
 import { useState } from "react";
 import { ActivityIndicator, ScrollView, Switch } from "react-native";
 import { FileLogger } from "react-native-file-logger";
@@ -82,33 +84,38 @@ export default function SettingsScreen() {
         return;
       }
 
-      const Device = await import("expo-device");
-
       const version = Constants.expoConfig?.version;
       const commit = Constants.expoConfig?.extra?.commit;
 
-      const header = [
+      const info = [
         `Version: ${version}, Commit: ${commit}`,
         `Device: ${Device.manufacturer} ${Device.modelName} ${Device.modelId}`,
         `OS: ${Device.osName} ${Device.osVersion} ${Device.osBuildId} ${Device.osInternalBuildId} ${Device.osBuildFingerprint}`,
         `Architecture: ${Device.supportedCpuArchitectures}`,
         `Memory: ${Device.totalMemory}`,
         `Time: ${new Date().toISOString()}`,
-        "",
       ].join("\n");
 
-      let log = header;
-      for (const path of paths) {
-        const file = new File(path);
-        const content = file.text();
-        log += content + "\n";
+      const archive = new JSZip();
+      archive.file("info.txt", info);
+
+      for (const p of paths) {
+        const uri = p.startsWith("file://") ? p : `file://${p}`;
+        const src = new File(uri);
+        if (src.exists) {
+          const content = await src.text();
+          archive.file(src.name, content);
+        }
       }
 
-      const file = new File(new Directory(Paths.cache), "iwut-logs.txt");
-      await file.write(log);
-      await Sharing.shareAsync(file.uri, {
-        UTI: "public.plain-text",
-        mimeType: "text/plain",
+      const zipData = await archive.generateAsync({ type: "uint8array" });
+      const zipName = `dev.tokenteam.net_logs_${Date.now()}.zip`;
+      const zipFile = new File(Paths.cache, zipName);
+      await zipFile.write(zipData);
+
+      await Sharing.shareAsync(zipFile.uri, {
+        UTI: "public.zip-archive",
+        mimeType: "application/zip",
         dialogTitle: "导出日志",
       });
     } catch (e) {
