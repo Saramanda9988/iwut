@@ -23,7 +23,7 @@ export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:
 
 if ! command -v sdkmanager &> /dev/null; then
   mkdir -p /opt/android-sdk/cmdline-tools
-  wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O /tmp/tools.zip
+  wget https://dl.google.com/android/repository/commandlinetools-linux-14742923_latest.zip -O /tmp/tools.zip
   unzip /tmp/tools.zip -d /opt/android-sdk/cmdline-tools
   mv /opt/android-sdk/cmdline-tools/cmdline-tools /opt/android-sdk/cmdline-tools/latest
   rm /tmp/tools.zip
