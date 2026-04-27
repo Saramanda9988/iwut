@@ -17,7 +17,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import Toast from "react-native-toast-message";
-import { WebView, type WebViewNavigation } from "react-native-webview";
+import { WebView } from "react-native-webview";
 
 import { useZhlgdAutoLogin } from "@/hooks/use-zhlgd-autologin";
 import { reportError } from "@/lib/report";
@@ -26,21 +26,22 @@ import { type Course, type ImportType, useCourseStore } from "@/store/course";
 // 本科生
 const BACHELOR_LOGIN_URL =
   "https://zhlgd.whut.edu.cn/tpass/login?service=https%3A%2F%2Fjwxt.whut.edu.cn%2Fjwapp%2Fsys%2Fhomeapp%2Findex.do%3FforceCas%3D1";
-const BACHELOR_HOME_PREFIX =
-  "https://jwxt.whut.edu.cn/jwapp/sys/homeapp/home/index.html";
+const BACHELOR_HOME_PREFIX = "https://jwxt.whut.edu.cn/jwapp/sys/homeapp/";
 
 const BACHELOR_FETCH_SCRIPT = `(async function() {
+  var log = function(s){ window.ReactNativeWebView.postMessage(JSON.stringify({type:'debug', message:s})); };
   try {
+    log('script started, url=' + location.href);
     await fetch(
       '/jwapp/sys/homeapp/api/home/changeAppRole.do?appRole=ef212c48c8f84be79acbd9d81b090f51',
       {method:'POST', credentials:'include', headers:{'Content-Type':'application/x-www-form-urlencoded'}}
     );
+    log('changeAppRole ok');
     var ud = ((await (await fetch('/jwapp/sys/homeapp/api/home/currentUser.do', {
       method:'GET', credentials:'include', headers:{'Fetch-Api':'true'}
     })).json()).datas) || {};
     var xh = ud.userId || '';
     var term = (ud.welcomeInfo && ud.welcomeInfo.xnxqdm) || '';
-    var log = function(s){ window.ReactNativeWebView.postMessage(JSON.stringify({type:'debug', message:s})); };
     log('user=' + xh + ' term=' + term);
     if (!xh || !term) {
       window.ReactNativeWebView.postMessage(JSON.stringify({type:'error', message:'获取用户信息失败'}));
@@ -90,7 +91,13 @@ const BACHELOR_FETCH_SCRIPT = `(async function() {
     log('parsed ' + courses.length + ' courses');
     window.ReactNativeWebView.postMessage(JSON.stringify({type:'courses', data: courses, termStart: termStart}));
   } catch(e) {
-    window.ReactNativeWebView.postMessage(JSON.stringify({type:'error', message: e.message || ''}));
+    window.ReactNativeWebView.postMessage(JSON.stringify({
+      type:'error',
+      message: (e && e.message) ? String(e.message) : '',
+      name: (e && e.name) ? String(e.name) : '',
+      stack: (e && e.stack) ? String(e.stack).substring(0, 1000) : '',
+      url: (typeof location !== 'undefined' && location.href) ? location.href : ''
+    }));
   }
 })(); true;`;
 
@@ -263,25 +270,32 @@ export const GetCourse = forwardRef<GetCourseHandle>(
       }
     }, []);
 
-    const handleBachelorNav = useCallback((state: WebViewNavigation) => {
-      if (state.loading) return;
-      if (!injected.current && state.url.startsWith(BACHELOR_HOME_PREFIX)) {
-        injected.current = true;
-        webview.current?.injectJavaScript(BACHELOR_FETCH_SCRIPT);
-      }
-    }, []);
+    const handleLoadEnd = useCallback(
+      (e: { nativeEvent: { url: string } }) => {
+        autoLoginOnLoadEnd(e);
+        if (injected.current) return;
 
-    const handleMasterNav = useCallback((state: WebViewNavigation) => {
-      if (!injected.current && state.url.startsWith(MASTER_MAIN_PREFIX)) {
-        injected.current = true;
-        setTimeout(() => {
-          webview.current?.injectJavaScript(MASTER_NAV_SCRIPT);
+        const url = e.nativeEvent.url;
+
+        if (importType === "bachelor" && url.startsWith(BACHELOR_HOME_PREFIX)) {
+          injected.current = true;
           setTimeout(() => {
-            webview.current?.injectJavaScript(MASTER_PARSE_SCRIPT);
+            webview.current?.injectJavaScript(BACHELOR_FETCH_SCRIPT);
+          }, 1500);
+        }
+
+        if (importType === "master" && url.startsWith(MASTER_MAIN_PREFIX)) {
+          injected.current = true;
+          setTimeout(() => {
+            webview.current?.injectJavaScript(MASTER_NAV_SCRIPT);
+            setTimeout(() => {
+              webview.current?.injectJavaScript(MASTER_PARSE_SCRIPT);
+            }, 3000);
           }, 3000);
-        }, 3000);
-      }
-    }, []);
+        }
+      },
+      [autoLoginOnLoadEnd, importType],
+    );
 
     const handleMessage = useCallback(
       (event: { nativeEvent: { data: string } }) => {
@@ -298,8 +312,15 @@ export const GetCourse = forwardRef<GetCourseHandle>(
         }
 
         if (msg?.type === "error") {
-          reportError(new Error(msg.message), {
+          const err = new Error(msg.message || "Load failed");
+          if (msg.name) err.name = String(msg.name);
+          if (msg.stack) err.stack = String(msg.stack);
+          reportError(err, {
             module: `course-${importType}`,
+            webviewErrorName: msg.name,
+            webviewErrorMessage: msg.message,
+            webviewErrorStack: msg.stack,
+            webviewUrl: msg.url,
           });
           finish(false, msg.message);
           return;
@@ -365,8 +386,6 @@ export const GetCourse = forwardRef<GetCourseHandle>(
 
     const loginUrl =
       importType === "bachelor" ? BACHELOR_LOGIN_URL : MASTER_LOGIN_URL;
-    const handleNav =
-      importType === "bachelor" ? handleBachelorNav : handleMasterNav;
 
     return (
       <Modal visible transparent animationType="fade">
@@ -442,16 +461,24 @@ export const GetCourse = forwardRef<GetCourseHandle>(
               </Text>
             </View>
           </View>
-          <View style={{ height: 0, overflow: "hidden" }}>
+          <View
+            style={{
+              position: "absolute",
+              left: -9999,
+              top: 0,
+              width: 390,
+              height: 844,
+            }}
+            pointerEvents="none"
+          >
             <WebView
               source={{ uri: loginUrl }}
-              style={{ height: 1, width: 1 }}
+              style={{ flex: 1 }}
               javaScriptEnabled
               domStorageEnabled
               thirdPartyCookiesEnabled
               originWhitelist={["*"]}
-              onLoadEnd={autoLoginOnLoadEnd}
-              onNavigationStateChange={handleNav}
+              onLoadEnd={handleLoadEnd}
               onMessage={handleMessage}
               ref={webview}
             />

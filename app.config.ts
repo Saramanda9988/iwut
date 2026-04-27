@@ -15,11 +15,13 @@ const config: ExpoConfig = {
   updates: {
     url: "https://expo.tokenteam.net/api/updates/019da0ce-9cda-76dc-b440-0c6a45d38292/manifest",
     checkAutomatically: "ON_LOAD",
-    codeSigningCertificate: "./assets/certificate.pem",
-    codeSigningMetadata: {
-      keyid: "main",
-      alg: "rsa-v1_5-sha256",
-    },
+    ...(!IS_DEV && {
+      codeSigningCertificate: "./assets/certificate.pem",
+      codeSigningMetadata: {
+        keyid: "main",
+        alg: "rsa-v1_5-sha256",
+      },
+    }),
   },
   orientation: "portrait",
   icon: "./assets/images/icon.png",
@@ -48,7 +50,7 @@ const config: ExpoConfig = {
     predictiveBackGestureEnabled: false,
   },
   plugins: [
-    "expo-dev-client",
+    ...(IS_DEV ? ["expo-dev-client"] : []),
     "expo-router",
     "expo-font",
     "expo-web-browser",
