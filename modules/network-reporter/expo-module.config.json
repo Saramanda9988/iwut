@@ -1,0 +1,6 @@
+{
+  "platforms": ["android"],
+  "android": {
+    "modules": ["dev.tokenteam.iwut.networkreporter.NetworkReporterModule"]
+  }
+}

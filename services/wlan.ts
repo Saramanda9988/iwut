@@ -2,6 +2,8 @@ import { Platform } from "react-native";
 import TcpSocket from "react-native-tcp-socket";
 import WifiManager from "react-native-wifi-reborn";
 
+import { reportWifiConnectivity } from "@/modules/network-reporter";
+
 const GATEWAY = "http://172.30.21.100";
 
 function getNasId(): Promise<string | null> {
@@ -93,6 +95,11 @@ export async function login(
 
     if (code !== 0) {
       throw new Error(msg);
+    }
+
+    if (Platform.OS === "android") {
+      // 登录成功后通知系统重新评估 Wi-Fi 可用性
+      await reportWifiConnectivity(true);
     }
 
     return msg;
