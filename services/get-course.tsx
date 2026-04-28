@@ -19,6 +19,7 @@ import Animated, {
 import Toast from "react-native-toast-message";
 import { WebView } from "react-native-webview";
 
+import { IS_DEV } from "@/constants/is-dev";
 import { useZhlgdAutoLogin } from "@/hooks/use-zhlgd-autologin";
 import { reportError } from "@/lib/report";
 import { type Course, type ImportType, useCourseStore } from "@/store/course";
@@ -478,6 +479,7 @@ export const GetCourse = forwardRef<GetCourseHandle>(
               domStorageEnabled
               thirdPartyCookiesEnabled
               originWhitelist={["*"]}
+              webviewDebuggingEnabled={IS_DEV}
               onLoadEnd={handleLoadEnd}
               onMessage={handleMessage}
               ref={webview}

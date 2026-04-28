@@ -7,6 +7,7 @@ import {
   type WebViewNavigation,
 } from "react-native-webview";
 
+import { IS_DEV } from "@/constants/is-dev";
 import { useZhlgdAutoLogin } from "@/hooks/use-zhlgd-autologin";
 import {
   NATIVE_RPC_INJECTED_JAVASCRIPT,
@@ -53,6 +54,7 @@ export default function BrowserScreen() {
         style={{ flex: 1 }}
         javaScriptEnabled
         originWhitelist={["*"]}
+        webviewDebuggingEnabled={IS_DEV}
         injectedJavaScriptBeforeContentLoaded={NATIVE_RPC_INJECTED_JAVASCRIPT}
         onNavigationStateChange={onNavigationStateChange}
         onLoadEnd={autoLoginOnLoadEnd}

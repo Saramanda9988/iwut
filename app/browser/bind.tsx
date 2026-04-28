@@ -1,3 +1,4 @@
+import { IS_DEV } from "@/constants/is-dev";
 import { reportError } from "@/lib/report";
 import { useUserBindStore } from "@/store/user-bind";
 import { router, Stack } from "expo-router";
@@ -149,6 +150,7 @@ export default function BindScreen() {
         style={{ flex: 1 }}
         javaScriptEnabled
         originWhitelist={["*"]}
+        webviewDebuggingEnabled={IS_DEV}
         injectedJavaScript={INJECTED_JS}
         onNavigationStateChange={onNavigationStateChange}
         onMessage={onMessage}
