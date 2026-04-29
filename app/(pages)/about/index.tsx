@@ -56,7 +56,7 @@ export default function AboutScreen() {
           if (Platform.OS === "ios") {
             Linking.openURL("itms-apps://apps.apple.com/cn/app/id6761684977");
           } else {
-            const channel = Updates.channel ?? "production";
+            const channel = Updates.channel || "production";
             Linking.openURL(
               `https://download.tokenteam.dev/iwut/${latest}/${channel}.apk`,
             );

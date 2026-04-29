@@ -1,12 +1,13 @@
 import { execSync } from "child_process";
 import type { ExpoConfig } from "expo/config";
 
-// 仅在构建时生效，与 JS 层的 IS_DEV 无关
-const IS_DEV = process.env.EAS_BUILD_PROFILE === "development";
+const PROFILE = process.env.EAS_BUILD_PROFILE;
 const COMMIT = execSync("git rev-parse --short HEAD").toString().trim();
+// 仅在构建时生效，与 JS 层的 IS_DEV 无关
+const IS_DEV = PROFILE === "development";
 
 const config: ExpoConfig = {
-  name: IS_DEV ? "掌上吾理 Pro (Dev)" : "掌上吾理 Pro",
+  name: IS_DEV ? "掌上吾理 Dev" : "掌上吾理 Pro",
   slug: "iwut",
   version: "0.1.6",
   runtimeVersion: {
@@ -15,6 +16,11 @@ const config: ExpoConfig = {
   updates: {
     url: "https://expo.tokenteam.net/api/updates/019da0ce-9cda-76dc-b440-0c6a45d38292/manifest",
     checkAutomatically: "ON_LOAD",
+    ...(PROFILE && {
+      requestHeaders: {
+        "expo-channel-name": PROFILE,
+      },
+    }),
     ...(!IS_DEV && {
       codeSigningCertificate: "./assets/certificate.pem",
       codeSigningMetadata: {
