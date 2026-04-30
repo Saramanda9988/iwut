@@ -41,9 +41,9 @@ function getNasId(): Promise<string | null> {
       }
     });
 
-    socket.on("error", (error) => {
+    socket.on("error", () => {
       socket.destroy();
-      reject(error);
+      reject(new Error("网络连接异常，请检查网络连接并重试"));
     });
   });
 }
@@ -56,7 +56,7 @@ export async function login(
     try {
       await WifiManager.forceWifiUsageWithOptions(true, { noInternet: true });
     } catch {
-      throw new Error("请连接校园网后再试");
+      throw new Error("非校园网环境，请连接校园网后重试");
     }
   }
 

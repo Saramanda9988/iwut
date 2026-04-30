@@ -72,13 +72,22 @@ export default function WlanScreen() {
         position: "bottom",
       });
     } catch (e: any) {
-      reportError(e, { module: "wlan" });
-      Toast.show({
-        type: "error",
-        text1: "连接失败",
-        text2: e.message,
-        position: "bottom",
-      });
+      if (e.message) {
+        Toast.show({
+          type: "error",
+          text1: "连接失败",
+          text2: e.message,
+          position: "bottom",
+        });
+      } else {
+        reportError(e, { module: "wlan" });
+        Toast.show({
+          type: "error",
+          text1: "连接失败",
+          text2: e.toString(),
+          position: "bottom",
+        });
+      }
     } finally {
       setConnecting(false);
     }

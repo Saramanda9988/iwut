@@ -18,7 +18,7 @@ export async function checkUpdate(): Promise<{
   latestVersion: string;
 }> {
   const { version: latestVersion } = await fetch(
-    "https://cdn.jsdmirror.com/gh/TokenTeam/iwut@main/package.json",
+    "https://cdn.jsdmirror.com/cnb/TokenTeam/iwut@main/package.json",
   ).then((res) => res.json());
 
   return {
