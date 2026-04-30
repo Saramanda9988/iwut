@@ -1,6 +1,6 @@
 branch:
   - buttons:
-      - name: Build
+      - name: Build Android
         event: web_trigger_job
         isDefault: true
         inputs:
@@ -8,7 +8,6 @@ branch:
             type: select
             multiple: true
             required: true
-            default: development,preview
             options:
               - name: Development
                 value: development

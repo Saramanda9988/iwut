@@ -23,6 +23,7 @@
       "channel": "production",
       "autoIncrement": true,
       "env": {
+        "EXPO_PUBLIC_DEBUG": "0",
         "SENTRY_DISABLE_AUTO_UPLOAD": "true"
       },
       "android": {

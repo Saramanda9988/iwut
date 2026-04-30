@@ -44,4 +44,6 @@ fi
 
 yarn install
 
+rm -rf "${TMPDIR:-/tmp}/metro-cache" "${TMPDIR:-/tmp}"/haste-map-*
+
 eas build --profile "$PROFILE" --platform android --local
