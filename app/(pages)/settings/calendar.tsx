@@ -45,6 +45,9 @@ export default function CalendarSettingsScreen() {
   };
 
   const handlePickImage = async () => {
+    // 先关闭 BottomSheet，避免 expo-image-picker 在 RN Modal上下文
+    // 调用 .launch() 触发 unregistered ActivityResultLauncher
+    setShowBgPicker(false);
     const ImagePicker = await import("expo-image-picker");
     const { File, Paths } = await import("expo-file-system");
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -57,7 +60,6 @@ export default function CalendarSettingsScreen() {
     const dest = new File(Paths.document, `schedule-bg-${Date.now()}.jpg`);
     await source.copy(dest);
     setBackgroundImageUri(dest.uri);
-    setShowBgPicker(false);
     Toast.show({ type: "success", text1: "背景已设置", position: "bottom" });
   };
 
