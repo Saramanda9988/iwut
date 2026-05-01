@@ -4,7 +4,7 @@ import type { ExpoConfig } from "expo/config";
 const PROFILE = process.env.EAS_BUILD_PROFILE;
 const COMMIT = execSync("git rev-parse --short HEAD").toString().trim();
 // 仅在构建时生效，与 JS 层的 IS_DEV 无关
-const IS_DEV = PROFILE === "development";
+const IS_DEV = !PROFILE || PROFILE === "development";
 
 const config: ExpoConfig = {
   name: IS_DEV ? "掌上吾理 Dev" : "掌上吾理 Pro",
