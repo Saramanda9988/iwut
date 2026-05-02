@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="widget_padding_horizontal">22dp</dimen>
+    <dimen name="widget_week_text_size">17dp</dimen>
+    <dimen name="widget_date_text_size">22dp</dimen>
+    <dimen name="widget_day_of_week_text_size">17dp</dimen>
+    <dimen name="widget_day_of_week_width">77dp</dimen>
+    <dimen name="widget_day_of_week_height">34dp</dimen>
+    <dimen name="widget_course_name_text_size">14dp</dimen>
+    <dimen name="widget_course_room_time_text_size">12dp</dimen>
+    <dimen name="widget_course_hint_text_size">12dp</dimen>
+    <dimen name="widget_date_hint_text_size">10dp</dimen>
+    <dimen name="widget_all_done_text_size">17dp</dimen>
+</resources>

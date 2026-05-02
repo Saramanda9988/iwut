@@ -45,6 +45,9 @@ const config: ExpoConfig = {
         NSAllowsArbitraryLoadsInWebContent: true,
       },
     },
+    entitlements: {
+      "com.apple.security.application-groups": ["group.dev.tokenteam.iwut"],
+    },
   },
   android: {
     package: IS_DEV ? "dev.tokenteam.iwut.dev" : "dev.tokenteam.iwut",

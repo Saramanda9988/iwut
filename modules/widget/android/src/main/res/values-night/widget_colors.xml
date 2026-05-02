@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="widget_schedule_bg">#1D1D20</color>
+    <color name="widget_schedule_accent">#007AFF</color>
+    <color name="widget_schedule_text_primary">#FFFFFF</color>
+    <color name="widget_schedule_text_secondary">#AEAEB2</color>
+    <color name="widget_schedule_text_on_accent">#FFFFFF</color>
+    <color name="widget_schedule_illustration_stroke">#F3F3F3</color>
+</resources>

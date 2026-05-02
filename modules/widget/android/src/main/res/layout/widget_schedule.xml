@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_schedule_background">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitEnd"
+        android:src="@drawable/ic_widget_schedule_bg"
+        android:contentDescription="@null" />
+
+    <RelativeLayout
+        android:id="@+id/info_group"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginStart="@dimen/widget_padding_horizontal">
+
+        <TextView
+            android:id="@+id/tv_week"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:textSize="@dimen/widget_week_text_size"
+            android:textColor="@color/widget_schedule_accent"
+            tools:text="第1周"
+            tools:ignore="SpUsage" />
+
+        <TextView
+            android:id="@+id/tv_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_week"
+            android:layout_marginTop="5dp"
+            android:textSize="@dimen/widget_date_text_size"
+            android:textColor="@color/widget_schedule_text_primary"
+            tools:text="12月1日"
+            tools:ignore="SpUsage" />
+
+        <TextView
+            android:id="@+id/tv_day_of_week"
+            android:layout_width="@dimen/widget_day_of_week_width"
+            android:layout_height="@dimen/widget_day_of_week_height"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="17dp"
+            android:background="@drawable/widget_schedule_day_of_week_bg"
+            android:gravity="center"
+            android:textColor="@color/widget_schedule_text_on_accent"
+            android:textSize="@dimen/widget_day_of_week_text_size"
+            tools:text="周一"
+            tools:ignore="SpUsage" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/course_group"
+        android:layout_width="240dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="@dimen/widget_padding_horizontal">
+
+        <RelativeLayout
+            android:id="@+id/course_row_1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <TextView
+                android:id="@+id/course_1_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:maxLength="12"
+                android:textSize="@dimen/widget_course_name_text_size"
+                android:textColor="@color/widget_schedule_text_primary"
+                tools:text="高等数学"
+                tools:ignore="SpUsage" />
+
+            <TextView
+                android:id="@+id/course_1_tag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/course_1_name"
+                android:layout_alignTop="@id/course_1_name"
+                android:layout_alignBottom="@id/course_1_name"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="2dp"
+                android:paddingStart="3dp"
+                android:paddingEnd="3dp"
+                android:gravity="center"
+                android:textSize="@dimen/widget_date_hint_text_size"
+                android:textColor="@color/widget_schedule_accent"
+                android:background="@drawable/widget_schedule_date_hint_bg"
+                tools:text="今天"
+                tools:ignore="SpUsage" />
+
+            <RelativeLayout
+                android:id="@+id/course_1_detail_group"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/course_1_name"
+                android:layout_marginTop="5dp">
+
+                <TextView
+                    android:id="@+id/course_1_room"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_centerVertical="true"
+                    android:maxEms="9"
+                    android:textSize="@dimen/widget_course_room_time_text_size"
+                    android:textColor="@color/widget_schedule_text_secondary"
+                    tools:text="博学主楼101"
+                    tools:ignore="SpUsage" />
+
+                <ImageView
+                    android:id="@+id/course_1_sep"
+                    android:layout_width="1dp"
+                    android:layout_height="14dp"
+                    android:layout_toEndOf="@id/course_1_room"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_centerVertical="true"
+                    android:src="@color/widget_schedule_text_secondary"
+                    android:contentDescription="@null" />
+
+                <TextView
+                    android:id="@+id/course_1_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/course_1_sep"
+                    android:layout_centerVertical="true"
+                    android:textSize="@dimen/widget_course_room_time_text_size"
+                    android:textColor="@color/widget_schedule_text_secondary"
+                    tools:text="08:00-09:35"
+                    tools:ignore="SpUsage" />
+            </RelativeLayout>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/course_1_detail_group"
+                android:layout_marginTop="5dp"
+                android:src="@color/widget_schedule_text_secondary"
+                android:contentDescription="@null" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/course_row_2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/course_row_1"
+            android:layout_marginTop="5dp"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <TextView
+                android:id="@+id/course_2_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:maxLength="12"
+                android:textSize="@dimen/widget_course_name_text_size"
+                android:textColor="@color/widget_schedule_text_primary"
+                tools:text="大学物理"
+                tools:ignore="SpUsage" />
+
+            <TextView
+                android:id="@+id/course_2_tag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/course_2_name"
+                android:layout_alignTop="@id/course_2_name"
+                android:layout_alignBottom="@id/course_2_name"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="2dp"
+                android:paddingStart="3dp"
+                android:paddingEnd="3dp"
+                android:gravity="center"
+                android:textSize="@dimen/widget_date_hint_text_size"
+                android:textColor="@color/widget_schedule_accent"
+                android:background="@drawable/widget_schedule_date_hint_bg"
+                tools:text="明天"
+                tools:ignore="SpUsage" />
+
+            <RelativeLayout
+                android:id="@+id/course_2_detail_group"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/course_2_name"
+                android:layout_marginTop="5dp">
+
+                <TextView
+                    android:id="@+id/course_2_room"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_centerVertical="true"
+                    android:maxEms="9"
+                    android:textSize="@dimen/widget_course_room_time_text_size"
+                    android:textColor="@color/widget_schedule_text_secondary"
+                    tools:text="博学主楼101"
+                    tools:ignore="SpUsage" />
+
+                <ImageView
+                    android:id="@+id/course_2_sep"
+                    android:layout_width="1dp"
+                    android:layout_height="14dp"
+                    android:layout_toEndOf="@id/course_2_room"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_centerVertical="true"
+                    android:src="@color/widget_schedule_text_secondary"
+                    android:contentDescription="@null" />
+
+                <TextView
+                    android:id="@+id/course_2_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/course_2_sep"
+                    android:layout_centerVertical="true"
+                    android:textSize="@dimen/widget_course_room_time_text_size"
+                    android:textColor="@color/widget_schedule_text_secondary"
+                    tools:text="10:00-11:35"
+                    tools:ignore="SpUsage" />
+            </RelativeLayout>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/course_2_detail_group"
+                android:layout_marginTop="5dp"
+                android:src="@color/widget_schedule_text_secondary"
+                android:contentDescription="@null" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/tv_no_more"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/course_row_1"
+            android:layout_marginTop="17dp"
+            android:layout_marginStart="5dp"
+            android:text="@string/widget_no_more_course"
+            android:textColor="@color/widget_schedule_text_primary"
+            android:textSize="@dimen/widget_all_done_text_size"
+            android:visibility="gone"
+            tools:ignore="SpUsage" />
+
+        <TextView
+            android:id="@+id/tv_course_hint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="17dp"
+            android:textColor="@color/widget_schedule_text_primary"
+            android:textSize="@dimen/widget_course_hint_text_size"
+            android:visibility="gone"
+            tools:text="今天还有2节课，明天还有3节课"
+            tools:ignore="SpUsage" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/all_done_group"
+        android:layout_width="240dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentEnd="true"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tv_all_done"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/widget_all_courses_done"
+            android:textColor="@color/widget_schedule_text_primary"
+            android:textSize="@dimen/widget_all_done_text_size"
+            tools:ignore="SpUsage" />
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_all_done"
+            android:layout_alignParentBottom="true"
+            android:layout_marginTop="11dp"
+            android:scaleType="fitEnd"
+            android:src="@drawable/ic_widget_schedule_all_done"
+            android:contentDescription="@null" />
+    </RelativeLayout>
+
+</RelativeLayout>
