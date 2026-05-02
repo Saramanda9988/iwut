@@ -4,30 +4,33 @@ import WidgetKit
 struct ScheduleWidgetEntryView: View {
     var entry: ScheduleTimelineProvider.Entry
 
-    private var courses: [WidgetCourse] {
-        entry.courses
+    private var displayCourses: [(course: WidgetCourse, isToday: Bool)] {
+        entry.displayCourses
     }
 
     private var bottomText: String {
-        guard let data = entry.data else { return "" }
-        if courses.isEmpty { return "" }
+        guard entry.data != nil else { return "" }
+        if displayCourses.isEmpty { return "" }
 
-        if data.todayCourses.isEmpty && data.tomorrowCourses.isEmpty {
+        let upcomingCount = entry.upcomingToday.count
+        let tomorrowCount = entry.tomorrowCourses.count
+
+        if upcomingCount == 0 && tomorrowCount == 0 {
             return "今天和明天都没有课啦～"
         }
 
         let todayPart: String
-        if data.todayCourses.isEmpty {
+        if upcomingCount == 0 {
             todayPart = "今天没有课啦，"
         } else {
-            todayPart = "今天还有\(data.todayCourses.count)节课，"
+            todayPart = "今天还有\(upcomingCount)节课，"
         }
 
         let tomorrowPart: String
-        if data.tomorrowCourses.isEmpty {
+        if tomorrowCount == 0 {
             tomorrowPart = "明天没有课啦～"
         } else {
-            tomorrowPart = "明天还有\(data.tomorrowCourses.count)节课"
+            tomorrowPart = "明天还有\(tomorrowCount)节课"
         }
 
         return todayPart + tomorrowPart
@@ -35,37 +38,30 @@ struct ScheduleWidgetEntryView: View {
 
     var body: some View {
         ZStack {
-            WidgetBackgroundView(isEmpty: courses.isEmpty)
+            WidgetBackgroundView(isEmpty: displayCourses.isEmpty)
 
             HStack(spacing: 12) {
-                if let data = entry.data {
-                    DateInfoView(
-                        weekStr: data.weekStr,
-                        dateStr: data.dateStr,
-                        dayOfWeekStr: data.dayOfWeekStr
-                    )
-                } else {
-                    DateInfoView(
-                        weekStr: "第-周",
-                        dateStr: "--月--日",
-                        dayOfWeekStr: "--"
-                    )
-                }
+                DateInfoView(
+                    weekStr: entry.weekStr,
+                    dateStr: entry.dateStr,
+                    dayOfWeekStr: entry.dayOfWeekStr
+                )
 
                 VStack(alignment: .leading, spacing: 0) {
-                    if courses.isEmpty {
+                    if displayCourses.isEmpty {
                         EmptyCourseView()
                     }
 
-                    ForEach(courses.prefix(2).indices, id: \.self) { index in
+                    ForEach(displayCourses.indices, id: \.self) { index in
                         if index > 0 {
                             Divider()
                                 .padding(.vertical, 8)
                         }
-                        CourseInfoView(course: courses[index])
+                        let item = displayCourses[index]
+                        CourseInfoView(course: item.course, isToday: item.isToday)
                     }
 
-                    if courses.count == 1 {
+                    if displayCourses.count == 1 {
                         Text("没有更多课啦～")
                             .foregroundColor(Color("TextPrimary"))
                             .font(.system(size: 12))

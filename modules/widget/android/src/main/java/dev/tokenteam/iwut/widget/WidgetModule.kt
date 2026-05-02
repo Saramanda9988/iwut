@@ -32,6 +32,7 @@ class WidgetModule : Module() {
                 intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
                 context.sendBroadcast(intent)
             }
+            ScheduleWidget.scheduleNextAlarm(context)
             null
         }
     }

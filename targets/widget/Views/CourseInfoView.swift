@@ -2,9 +2,10 @@ import SwiftUI
 
 struct CourseInfoView: View {
     let course: WidgetCourse
+    let isToday: Bool
 
     private var tagText: String {
-        course.isToday ? "今天" : "明天"
+        isToday ? "今天" : "明天"
     }
 
     var body: some View {
