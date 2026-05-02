@@ -2,27 +2,28 @@ package dev.tokenteam.iwut.widget
 
 import android.content.Context
 import com.google.gson.Gson
+import com.google.gson.annotations.SerializedName
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 data class WidgetCourse(
-    val name: String = "",
-    val room: String = "",
-    val day: Int = 1,
-    val weekStart: Int = 1,
-    val weekEnd: Int = 20,
-    val sectionStart: Int = 0,
-    val sectionEnd: Int = 0,
-    val startTime: String = "",
-    val endTime: String = "",
+    @SerializedName("name") val name: String = "",
+    @SerializedName("room") val room: String = "",
+    @SerializedName("day") val day: Int = 1,
+    @SerializedName("weekStart") val weekStart: Int = 1,
+    @SerializedName("weekEnd") val weekEnd: Int = 20,
+    @SerializedName("sectionStart") val sectionStart: Int = 0,
+    @SerializedName("sectionEnd") val sectionEnd: Int = 0,
+    @SerializedName("startTime") val startTime: String = "",
+    @SerializedName("endTime") val endTime: String = "",
 )
 
 data class ScheduleWidgetData(
-    val courses: List<WidgetCourse> = emptyList(),
-    val termStart: String = "",
-    val updatedAt: String = "",
+    @SerializedName("courses") val courses: List<WidgetCourse> = emptyList(),
+    @SerializedName("termStart") val termStart: String = "",
+    @SerializedName("updatedAt") val updatedAt: String = "",
 )
 
 object ScheduleData {
