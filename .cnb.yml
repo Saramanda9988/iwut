@@ -23,6 +23,7 @@ main:
             yarn install --frozen-lockfile
             yarn run lint
 
+"**":
   web_trigger_job:
     - runner:
         cpus: 16
