@@ -1,0 +1,18 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'dev.tokenteam.iwut'
+
+expoModule {
+  canBePublished = false
+}
+
+android {
+  namespace "dev.tokenteam.iwut.widget"
+}
+
+dependencies {
+  implementation "com.google.code.gson:gson:2.11.0"
+}

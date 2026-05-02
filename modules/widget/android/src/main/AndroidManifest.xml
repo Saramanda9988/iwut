@@ -1,0 +1,16 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+  <application>
+    <receiver
+      android:name="dev.tokenteam.iwut.widget.ScheduleWidget"
+      android:exported="true">
+      <intent-filter>
+        <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+        <action android:name="dev.tokenteam.iwut.widget.AUTO_REFRESH" />
+      </intent-filter>
+      <meta-data
+        android:name="android.appwidget.provider"
+        android:resource="@xml/widget_schedule_info" />
+    </receiver>
+  </application>
+</manifest>

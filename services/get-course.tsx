@@ -22,6 +22,7 @@ import { WebView } from "react-native-webview";
 import { IS_DEV } from "@/constants/is-dev";
 import { useZhlgdAutoLogin } from "@/hooks/use-zhlgd-autologin";
 import { reportError } from "@/lib/report";
+import { syncWidgetData } from "@/services/widget-sync";
 import { type Course, type ImportType, useCourseStore } from "@/store/course";
 
 // 本科生
@@ -352,6 +353,7 @@ export const GetCourse = forwardRef<GetCourseHandle>(
           store.setImportedCourses(courses);
           store.setLastImportType(importType);
           if (msg.termStart) store.setTermStart(msg.termStart);
+          syncWidgetData().catch(() => {});
           finish(true);
           return;
         }
@@ -377,6 +379,7 @@ export const GetCourse = forwardRef<GetCourseHandle>(
           const store = useCourseStore.getState();
           store.setImportedCourses(courses);
           store.setLastImportType(importType);
+          syncWidgetData().catch(() => {});
           finish(true);
         }
       },

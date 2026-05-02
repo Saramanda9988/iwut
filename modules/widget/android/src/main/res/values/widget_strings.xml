@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_all_courses_done">没有更多课啦，放松一下吧～</string>
+    <string name="widget_no_more_course">没有更多课啦～</string>
+</resources>
