@@ -87,6 +87,7 @@ const config: ExpoConfig = {
       },
     ],
     "@sentry/react-native",
+    "@bacons/apple-targets",
     "./plugins/with-gradle-props.js",
   ],
   experiments: {
