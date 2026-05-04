@@ -4,6 +4,8 @@ $:
         cpus: 16
       docker:
         image: docker.cnb.cool/zhxycn/env:latest
+        volumes:
+          - /opt/android-sdk:copy-on-write
       services:
         - vscode
         - docker
@@ -16,6 +18,9 @@ main:
   push:
     - docker:
         image: docker.cnb.cool/zhxycn/env:latest
+        volumes:
+          - /root/.yarn:copy-on-write
+          - node_modules:copy-on-write
       stages:
         - script: |
             export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
@@ -29,6 +34,11 @@ main:
         cpus: 16
       docker:
         image: docker.cnb.cool/zhxycn/env:latest
+        volumes:
+          - /opt/android-sdk:copy-on-write
+          - /root/.gradle:copy-on-write
+          - /root/.yarn:copy-on-write
+          - node_modules:copy-on-write
       imports:
         - https://cnb.cool/TokenTeam/secrets/-/blob/main/expo.yml
       stages:

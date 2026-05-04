@@ -15,6 +15,18 @@ const withGradleProps = createBuildGradlePropsConfigPlugin(
           "-XX:+HeapDumpOnOutOfMemoryError",
         ].join(" "),
     },
+    {
+      propName: "org.gradle.caching",
+      propValueGetter: () => "true",
+    },
+    {
+      propName: "org.gradle.parallel",
+      propValueGetter: () => "true",
+    },
+    {
+      propName: "org.gradle.daemon",
+      propValueGetter: () => "false",
+    },
   ],
   "withGradleProps",
 );

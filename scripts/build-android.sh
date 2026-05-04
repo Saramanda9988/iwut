@@ -42,7 +42,7 @@ if ! command -v eas &> /dev/null; then
   npm install -g eas-cli
 fi
 
-yarn install
+yarn install --frozen-lockfile
 
 rm -rf "${TMPDIR:-/tmp}/metro-cache" "${TMPDIR:-/tmp}"/haste-map-*
 
