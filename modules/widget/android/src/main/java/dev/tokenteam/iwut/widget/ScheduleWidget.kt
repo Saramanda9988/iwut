@@ -20,7 +20,9 @@ class ScheduleWidget : AppWidgetProvider() {
         for (id in appWidgetIds) {
             updateWidget(context, appWidgetManager, id)
         }
-        scheduleNextAlarm(context)
+        if (appWidgetIds.isNotEmpty()) {
+            scheduleNextAlarm(context)
+        }
     }
 
     override fun onReceive(context: Context, intent: Intent) {
@@ -36,6 +38,9 @@ class ScheduleWidget : AppWidgetProvider() {
 
     companion object {
         const val ACTION_AUTO_REFRESH = "dev.tokenteam.iwut.widget.AUTO_REFRESH"
+
+        // Do not use `0` for request code
+        const val REQUEST_CODE = 1234
 
         fun updateWidget(
             context: Context,
@@ -148,12 +153,12 @@ class ScheduleWidget : AppWidgetProvider() {
                 action = ACTION_AUTO_REFRESH
             }
             val pendingIntent = PendingIntent.getBroadcast(
-                context, 0, intent,
+                context, REQUEST_CODE, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
 
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            alarmManager.setExactAndAllowWhileIdle(
+            alarmManager.set(
                 AlarmManager.RTC_WAKEUP,
                 alarmTime.timeInMillis,
                 pendingIntent
