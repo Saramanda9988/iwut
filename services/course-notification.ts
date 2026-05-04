@@ -91,7 +91,7 @@ export async function scheduleWeeklyReminders(): Promise<void> {
         idCounter++,
         CHANNEL_ID,
         course.name,
-        `${startTimeStr} · ${course.room}`,
+        `${course.room} · ${startTimeStr}`,
         triggerAtMs,
         classStartMs,
         true,

@@ -38,10 +38,6 @@ class NotificationModule : Module() {
 
             val notification = buildCountdownNotification(context, channelId, title, body, target, ongoing)
             notificationManager?.notify(id, notification)
-
-            if (autoDismiss) {
-                scheduleDismiss(context, id, target)
-            }
             null
         }
 
@@ -105,34 +101,28 @@ class NotificationModule : Module() {
 
         val timeoutMs = targetTimeMs - System.currentTimeMillis()
 
-        return NotificationCompat.Builder(context, channelId)
+        val builder = NotificationCompat.Builder(context, channelId)
             .setContentTitle(title)
             .setContentText(body)
-            .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .setSmallIcon(R.drawable.ic_notification)
             .setWhen(targetTimeMs)
             .setUsesChronometer(true)
             .setChronometerCountDown(true)
             .setOngoing(ongoing)
+            .setCategory(NotificationCompat.CATEGORY_EVENT)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentIntent(contentIntent)
             .setAutoCancel(!ongoing)
             .apply {
                 if (timeoutMs > 0) setTimeoutAfter(timeoutMs)
             }
-            .build()
-    }
 
-    private fun scheduleDismiss(context: Context, id: Int, targetTimeMs: Long) {
-        val intent = Intent(context, CountdownReceiver::class.java).apply {
-            action = "dev.tokenteam.iwut.notification.DISMISS"
-            putExtra("id", id)
+        if (Build.VERSION.SDK_INT >= 36) {
+            builder.setRequestPromotedOngoing(true)
+            builder.setShortCriticalText(body)
         }
-        val pendingIntent = PendingIntent.getBroadcast(
-            context, id + 100000, intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-        alarmManager?.setExactAndAllowWhileIdle(
-            AlarmManager.RTC_WAKEUP, targetTimeMs, pendingIntent
-        )
+
+        return builder.build()
     }
 
     private fun cancelScheduledAlarm(context: Context, id: Int) {
@@ -148,12 +138,6 @@ class NotificationModule : Module() {
         val ids = getTrackedIds(context)
         for (id in ids) {
             cancelScheduledAlarm(context, id)
-            val dismissIntent = Intent(context, CountdownReceiver::class.java)
-            val dismissPending = PendingIntent.getBroadcast(
-                context, id + 100000, dismissIntent,
-                PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
-            )
-            dismissPending?.let { alarmManager?.cancel(it) }
         }
         clearTrackedIds(context)
     }

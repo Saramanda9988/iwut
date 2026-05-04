@@ -12,3 +12,7 @@ expoModule {
 android {
   namespace "dev.tokenteam.iwut.notification"
 }
+
+dependencies {
+  implementation 'androidx.core:core:1.18.0'
+}
