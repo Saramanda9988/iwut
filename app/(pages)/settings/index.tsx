@@ -9,6 +9,7 @@ import JSZip from "jszip";
 import { useRef, useState } from "react";
 import {
   ActivityIndicator,
+  PermissionsAndroid,
   Platform,
   Pressable,
   ScrollView,
@@ -54,6 +55,14 @@ export default function SettingsScreen() {
   const customInputRef = useRef<TextInput>(null);
 
   const handleCourseReminderChange = async (value: boolean) => {
+    // 检查通知权限
+    if (value && Platform.OS === "android") {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
+      );
+      if (granted !== PermissionsAndroid.RESULTS.GRANTED) return;
+    }
+
     setCourseReminder(value);
     await scheduleWeeklyReminders();
     if (value) {
