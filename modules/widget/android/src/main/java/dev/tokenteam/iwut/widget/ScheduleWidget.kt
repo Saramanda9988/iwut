@@ -40,7 +40,8 @@ class ScheduleWidget : AppWidgetProvider() {
         const val ACTION_AUTO_REFRESH = "dev.tokenteam.iwut.widget.AUTO_REFRESH"
 
         // Do not use `0` for request code
-        const val REQUEST_CODE = 1234
+        const val BROADCAST_REQUEST_CODE = 1234
+        const val ACTIVITY_REQUEST_CODE = 1235
 
         fun updateWidget(
             context: Context,
@@ -53,6 +54,7 @@ class ScheduleWidget : AppWidgetProvider() {
             if (data == null || data.termStart.isEmpty()) {
                 views.setViewVisibility(R.id.course_group, View.GONE)
                 views.setViewVisibility(R.id.all_done_group, View.VISIBLE)
+                setOnClickAction(context, views)
                 appWidgetManager.updateAppWidget(appWidgetId, views)
                 return
             }
@@ -81,7 +83,8 @@ class ScheduleWidget : AppWidgetProvider() {
                 ScheduleData.parseTimeToMinutes(it.endTime) > nowMin
             }
 
-            val combined = (upcomingToday.map { it to true } + tomorrowCourses.map { it to false }).take(2)
+            val combined =
+                (upcomingToday.map { it to true } + tomorrowCourses.map { it to false }).take(2)
 
             if (combined.isEmpty()) {
                 views.setViewVisibility(R.id.course_group, View.GONE)
@@ -117,14 +120,32 @@ class ScheduleWidget : AppWidgetProvider() {
             if (upcomingToday.isEmpty() && tomorrowCourses.isEmpty()) {
                 hintText = "今天和明天都没有课啦～"
             } else {
-                val todayHint = if (upcomingToday.isEmpty()) "今天没有课啦，" else "今天还有${upcomingToday.size}节课，"
-                val tomorrowHint = if (tomorrowCourses.isEmpty()) "明天没有课啦～" else "明天还有${tomorrowCourses.size}节课"
+                val todayHint =
+                    if (upcomingToday.isEmpty()) "今天没有课啦，" else "今天还有${upcomingToday.size}节课，"
+                val tomorrowHint =
+                    if (tomorrowCourses.isEmpty()) "明天没有课啦～" else "明天还有${tomorrowCourses.size}节课"
                 hintText = todayHint + tomorrowHint
             }
             views.setViewVisibility(R.id.tv_course_hint, View.VISIBLE)
             views.setTextViewText(R.id.tv_course_hint, hintText)
 
+            setOnClickAction(context, views)
             appWidgetManager.updateAppWidget(appWidgetId, views)
+        }
+
+        fun setOnClickAction(context: Context, views: RemoteViews) {
+            context.packageManager
+                .getLaunchIntentForPackage(context.packageName)
+                ?.let {
+                    it.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                    views.setOnClickPendingIntent(
+                        R.id.widget_root,
+                        PendingIntent.getActivity(
+                            context, ACTIVITY_REQUEST_CODE, it,
+                            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_CANCEL_CURRENT
+                        )
+                    )
+                }
         }
 
         fun scheduleNextAlarm(context: Context) {
@@ -153,7 +174,7 @@ class ScheduleWidget : AppWidgetProvider() {
                 action = ACTION_AUTO_REFRESH
             }
             val pendingIntent = PendingIntent.getBroadcast(
-                context, REQUEST_CODE, intent,
+                context, BROADCAST_REQUEST_CODE, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
 
