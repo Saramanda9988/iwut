@@ -1,6 +1,5 @@
 package dev.tokenteam.iwut.notification
 
-import android.app.AlarmManager
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
@@ -31,6 +30,8 @@ class CountdownReceiver : BroadcastReceiver() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
+        val timeoutMs = targetTimeMs - System.currentTimeMillis()
+
         val notification = NotificationCompat.Builder(context, channelId)
             .setContentTitle(title)
             .setContentText(body)
@@ -41,25 +42,13 @@ class CountdownReceiver : BroadcastReceiver() {
             .setOngoing(ongoing)
             .setContentIntent(contentIntent)
             .setAutoCancel(!ongoing)
+            .apply {
+                if (autoDismiss && timeoutMs > 0) setTimeoutAfter(timeoutMs)
+            }
             .build()
 
         val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         manager.notify(id, notification)
-
-        if (autoDismiss && targetTimeMs > System.currentTimeMillis()) {
-            val dismissIntent = Intent(context, CountdownReceiver::class.java).apply {
-                action = ACTION_DISMISS
-                putExtra("id", id)
-            }
-            val dismissPending = PendingIntent.getBroadcast(
-                context, id + 100000, dismissIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-            )
-            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            alarmManager.setExactAndAllowWhileIdle(
-                AlarmManager.RTC_WAKEUP, targetTimeMs, dismissPending
-            )
-        }
 
         NotificationModule.removeTrackedId(context, id)
     }

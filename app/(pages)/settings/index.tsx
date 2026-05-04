@@ -1,3 +1,4 @@
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import Constants from "expo-constants";
 import * as Device from "expo-device";
 import { Directory, File, Paths } from "expo-file-system";
@@ -9,6 +10,7 @@ import { useRef, useState } from "react";
 import {
   ActivityIndicator,
   Platform,
+  Pressable,
   ScrollView,
   Switch,
   Text,
@@ -302,7 +304,18 @@ export default function SettingsScreen() {
           </Text>
           <TextInput
             ref={customInputRef}
-            className="mx-3 h-9 flex-1 rounded-lg border border-neutral-300 px-3 text-center text-base text-neutral-900 dark:border-neutral-600 dark:text-neutral-100"
+            style={{
+              marginHorizontal: 12,
+              height: 34,
+              flex: 1,
+              borderRadius: 8,
+              borderWidth: 1,
+              borderColor: "#D4D4D4",
+              paddingHorizontal: 12,
+              paddingVertical: 0,
+              textAlign: "center",
+              fontSize: 14,
+            }}
             keyboardType="number-pad"
             maxLength={3}
             placeholder="1-120"
@@ -313,6 +326,20 @@ export default function SettingsScreen() {
             returnKeyType="done"
           />
           <Text className="text-base text-neutral-500">分钟</Text>
+          <Pressable
+            style={{
+              marginLeft: 8,
+              height: 34,
+              width: 34,
+              borderRadius: 8,
+              backgroundColor: "#3b82f6",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            onPress={handleCustomMinutesSubmit}
+          >
+            <MaterialIcons name="check" size={20} color="white" />
+          </Pressable>
         </View>
       </BottomSheet>
     </>

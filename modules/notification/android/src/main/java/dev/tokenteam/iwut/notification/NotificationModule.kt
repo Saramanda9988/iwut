@@ -103,6 +103,8 @@ class NotificationModule : Module() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
+        val timeoutMs = targetTimeMs - System.currentTimeMillis()
+
         return NotificationCompat.Builder(context, channelId)
             .setContentTitle(title)
             .setContentText(body)
@@ -113,6 +115,9 @@ class NotificationModule : Module() {
             .setOngoing(ongoing)
             .setContentIntent(contentIntent)
             .setAutoCancel(!ongoing)
+            .apply {
+                if (timeoutMs > 0) setTimeoutAfter(timeoutMs)
+            }
             .build()
     }
 
