@@ -5,16 +5,28 @@ import { Image } from "expo-image";
 import { Stack } from "expo-router";
 import * as Sharing from "expo-sharing";
 import JSZip from "jszip";
-import { useState } from "react";
-import { ActivityIndicator, ScrollView, Switch } from "react-native";
+import { useRef, useState } from "react";
+import {
+  ActivityIndicator,
+  Platform,
+  ScrollView,
+  Switch,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 import { FileLogger } from "react-native-file-logger";
 import Toast from "react-native-toast-message";
 
+import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { ConfirmSheet } from "@/components/ui/confirm-sheet";
 import { MenuGroup, MenuItem } from "@/components/ui/menu-item";
 import { reportError } from "@/lib/report";
+import { scheduleWeeklyReminders } from "@/services/course-notification";
 import { useScheduleStore } from "@/store/schedule";
 import { useSettingsStore } from "@/store/settings";
+
+const REMINDER_PRESETS = [15, 30, 60];
 
 export default function SettingsScreen() {
   const hapticFeedback = useSettingsStore((s) => s.hapticFeedback);
@@ -23,10 +35,45 @@ export default function SettingsScreen() {
   const setOpenCourseOnLaunch = useSettingsStore(
     (s) => s.setOpenCourseOnLaunch,
   );
+  const courseReminder = useSettingsStore((s) => s.courseReminder);
+  const setCourseReminder = useSettingsStore((s) => s.setCourseReminder);
+  const reminderMinutes = useSettingsStore((s) => s.reminderMinutes);
+  const setReminderMinutes = useSettingsStore((s) => s.setReminderMinutes);
 
   const [clearVisible, setClearVisible] = useState(false);
   const [clearing, setClearing] = useState(false);
   const [exporting, setExporting] = useState(false);
+  const [reminderSheetVisible, setReminderSheetVisible] = useState(false);
+  const [customMinutes, setCustomMinutes] = useState("");
+  const customInputRef = useRef<TextInput>(null);
+
+  const handleCourseReminderChange = async (value: boolean) => {
+    setCourseReminder(value);
+    await scheduleWeeklyReminders();
+  };
+
+  const handleReminderMinutesChange = async (value: number) => {
+    if (value < 1 || value > 120) return;
+    setReminderMinutes(value);
+    setCustomMinutes("");
+    setReminderSheetVisible(false);
+    if (courseReminder) {
+      await scheduleWeeklyReminders();
+    }
+  };
+
+  const handleCustomMinutesSubmit = () => {
+    const val = parseInt(customMinutes, 10);
+    if (!val || val < 1 || val > 120) {
+      Toast.show({
+        type: "error",
+        text1: "请输入 1-120 之间的数字",
+        position: "bottom",
+      });
+      return;
+    }
+    handleReminderMinutesChange(val);
+  };
 
   const handleClearCache = async () => {
     setClearVisible(false);
@@ -164,6 +211,37 @@ export default function SettingsScreen() {
           />
         </MenuGroup>
 
+        {Platform.OS === "android" && (
+          <MenuGroup title="通知">
+            <MenuItem
+              icon="notifications-active"
+              iconBg="#FF9500"
+              label="课前提醒"
+              showArrow={false}
+              right={
+                <Switch
+                  value={courseReminder}
+                  onValueChange={handleCourseReminderChange}
+                />
+              }
+            />
+            {courseReminder && (
+              <MenuItem
+                icon="schedule"
+                iconBg="#5856D6"
+                label="提醒时间"
+                showArrow
+                right={
+                  <Text className="text-sm text-neutral-500">
+                    提前 {reminderMinutes} 分钟
+                  </Text>
+                }
+                onPress={() => setReminderSheetVisible(true)}
+              />
+            )}
+          </MenuGroup>
+        )}
+
         <MenuGroup title="存储">
           <MenuItem
             icon="delete-outline"
@@ -193,6 +271,41 @@ export default function SettingsScreen() {
         destructive
         onConfirm={handleClearCache}
       />
+
+      <BottomSheet
+        visible={reminderSheetVisible}
+        onClose={() => setReminderSheetVisible(false)}
+        title="提醒时间"
+      >
+        {REMINDER_PRESETS.map((mins) => (
+          <MenuItem
+            key={mins}
+            icon={reminderMinutes === mins ? "check" : "radio-button-unchecked"}
+            iconBg={reminderMinutes === mins ? "#34C759" : "#C7C7CC"}
+            label={`提前 ${mins} 分钟`}
+            showArrow={false}
+            onPress={() => handleReminderMinutesChange(mins)}
+          />
+        ))}
+        <View className="flex-row items-center px-4 py-3">
+          <Text className="text-base text-neutral-900 dark:text-neutral-100">
+            自定义
+          </Text>
+          <TextInput
+            ref={customInputRef}
+            className="mx-3 h-9 flex-1 rounded-lg border border-neutral-300 px-3 text-center text-base text-neutral-900 dark:border-neutral-600 dark:text-neutral-100"
+            keyboardType="number-pad"
+            maxLength={3}
+            placeholder="1-120"
+            placeholderTextColor="#9CA3AF"
+            value={customMinutes}
+            onChangeText={setCustomMinutes}
+            onSubmitEditing={handleCustomMinutesSubmit}
+            returnKeyType="done"
+          />
+          <Text className="text-base text-neutral-500">分钟</Text>
+        </View>
+      </BottomSheet>
     </>
   );
 }

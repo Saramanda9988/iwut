@@ -36,6 +36,10 @@ import Toast from "react-native-toast-message";
 
 import { Themes } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+import {
+  initNotificationChannel,
+  scheduleWeeklyReminders,
+} from "@/services/course-notification";
 import { syncWidgetData } from "@/services/widget-sync";
 import { useCourseStore } from "@/store/course";
 import { useThemeStore } from "@/store/theme";
@@ -77,6 +81,11 @@ function RootLayout() {
   }, []);
 
   useEffect(() => {
+    initNotificationChannel().catch(() => {});
+    scheduleWeeklyReminders().catch(() => {});
+  }, []);
+
+  useEffect(() => {
     syncWidgetData().catch(() => {});
     const unsub = useCourseStore.subscribe((state, prev) => {
       if (
@@ -84,6 +93,7 @@ function RootLayout() {
         state.termStart !== prev.termStart
       ) {
         syncWidgetData().catch(() => {});
+        scheduleWeeklyReminders().catch(() => {});
       }
     });
     return unsub;
