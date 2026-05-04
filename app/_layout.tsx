@@ -38,6 +38,7 @@ import { Themes } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import {
   initNotificationChannel,
+  registerBackgroundRefresh,
   scheduleWeeklyReminders,
 } from "@/services/course-notification";
 import { syncWidgetData } from "@/services/widget-sync";
@@ -83,6 +84,7 @@ function RootLayout() {
   useEffect(() => {
     initNotificationChannel().catch(() => {});
     scheduleWeeklyReminders().catch(() => {});
+    registerBackgroundRefresh().catch(() => {});
   }, []);
 
   useEffect(() => {

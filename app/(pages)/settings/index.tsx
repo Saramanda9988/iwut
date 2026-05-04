@@ -22,7 +22,11 @@ import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { ConfirmSheet } from "@/components/ui/confirm-sheet";
 import { MenuGroup, MenuItem } from "@/components/ui/menu-item";
 import { reportError } from "@/lib/report";
-import { scheduleWeeklyReminders } from "@/services/course-notification";
+import {
+  registerBackgroundRefresh,
+  scheduleWeeklyReminders,
+  unregisterBackgroundRefresh,
+} from "@/services/course-notification";
 import { useScheduleStore } from "@/store/schedule";
 import { useSettingsStore } from "@/store/settings";
 
@@ -50,6 +54,11 @@ export default function SettingsScreen() {
   const handleCourseReminderChange = async (value: boolean) => {
     setCourseReminder(value);
     await scheduleWeeklyReminders();
+    if (value) {
+      await registerBackgroundRefresh();
+    } else {
+      await unregisterBackgroundRefresh();
+    }
   };
 
   const handleReminderMinutesChange = async (value: number) => {

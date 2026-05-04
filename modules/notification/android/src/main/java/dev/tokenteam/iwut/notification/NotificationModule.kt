@@ -8,7 +8,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 
@@ -23,17 +22,18 @@ class NotificationModule : Module() {
         Name("Notification")
 
         AsyncFunction("createChannel") { id: String, name: String, description: String ->
-            val manager = notificationManager ?: return@AsyncFunction
+            val manager = notificationManager ?: return@AsyncFunction null
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 val channel = NotificationChannel(id, name, NotificationManager.IMPORTANCE_HIGH).apply {
                     this.description = description
                 }
                 manager.createNotificationChannel(channel)
             }
+            null
         }
 
         AsyncFunction("showCountdown") { id: Int, channelId: String, title: String, body: String, targetTimeMs: Double, ongoing: Boolean, autoDismiss: Boolean ->
-            val context = appContext.reactContext ?: return@AsyncFunction
+            val context = appContext.reactContext ?: return@AsyncFunction null
             val target = targetTimeMs.toLong()
 
             val notification = buildCountdownNotification(context, channelId, title, body, target, ongoing)
@@ -42,10 +42,11 @@ class NotificationModule : Module() {
             if (autoDismiss) {
                 scheduleDismiss(context, id, target)
             }
+            null
         }
 
         AsyncFunction("scheduleCountdown") { id: Int, channelId: String, title: String, body: String, triggerAtMs: Double, targetTimeMs: Double, ongoing: Boolean, autoDismiss: Boolean ->
-            val context = appContext.reactContext ?: return@AsyncFunction
+            val context = appContext.reactContext ?: return@AsyncFunction null
             val trigger = triggerAtMs.toLong()
 
             val intent = Intent(context, CountdownReceiver::class.java).apply {
@@ -69,19 +70,22 @@ class NotificationModule : Module() {
             )
 
             trackScheduledId(context, id)
+            null
         }
 
         AsyncFunction("cancel") { id: Int ->
-            val context = appContext.reactContext ?: return@AsyncFunction
+            val context = appContext.reactContext ?: return@AsyncFunction null
             notificationManager?.cancel(id)
             cancelScheduledAlarm(context, id)
             removeTrackedId(context, id)
+            null
         }
 
         AsyncFunction("cancelAll") {
-            val context = appContext.reactContext ?: return@AsyncFunction
+            val context = appContext.reactContext ?: return@AsyncFunction null
             notificationManager?.cancelAll()
             cancelAllScheduledAlarms(context)
+            null
         }
     }
 
