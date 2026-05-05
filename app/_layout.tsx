@@ -26,7 +26,7 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useRef } from "react";
-import { Appearance, View } from "react-native";
+import { AppState, Appearance, Platform, View } from "react-native";
 import "react-native-reanimated";
 import {
   SafeAreaProvider,
@@ -36,6 +36,12 @@ import Toast from "react-native-toast-message";
 
 import { Themes } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+import {
+  initNotificationChannel,
+  registerBackgroundRefresh,
+  scheduleWeeklyReminders,
+  showUpcomingLiveActivity,
+} from "@/services/course-notification";
 import { syncWidgetData } from "@/services/widget-sync";
 import { useCourseStore } from "@/store/course";
 import { useThemeStore } from "@/store/theme";
@@ -77,6 +83,23 @@ function RootLayout() {
   }, []);
 
   useEffect(() => {
+    initNotificationChannel().catch(() => {});
+    scheduleWeeklyReminders().catch(() => {});
+    registerBackgroundRefresh().catch(() => {});
+    showUpcomingLiveActivity().catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (Platform.OS !== "ios") return;
+    const sub = AppState.addEventListener("change", (state) => {
+      if (state === "active") {
+        showUpcomingLiveActivity().catch(() => {});
+      }
+    });
+    return () => sub.remove();
+  }, []);
+
+  useEffect(() => {
     syncWidgetData().catch(() => {});
     const unsub = useCourseStore.subscribe((state, prev) => {
       if (
@@ -84,6 +107,7 @@ function RootLayout() {
         state.termStart !== prev.termStart
       ) {
         syncWidgetData().catch(() => {});
+        scheduleWeeklyReminders().catch(() => {});
       }
     });
     return unsub;

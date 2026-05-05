@@ -5,5 +5,6 @@ import WidgetKit
 struct IwutWidgetBundle: WidgetBundle {
     var body: some Widget {
         ScheduleWidget()
+        CountdownActivityWidget()
     }
 }

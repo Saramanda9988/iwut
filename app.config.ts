@@ -38,6 +38,7 @@ const config: ExpoConfig = {
     supportsTablet: true,
     infoPlist: {
       ITSAppUsesNonExemptEncryption: false,
+      NSSupportsLiveActivities: true,
       NSLocationWhenInUseUsageDescription:
         "用于在连接校园网时读取当前 Wi-Fi 相关信息并完成网络认证",
       NSAppTransportSecurity: {
@@ -87,6 +88,7 @@ const config: ExpoConfig = {
       },
     ],
     "@sentry/react-native",
+    "expo-background-task",
     "@bacons/apple-targets",
     "./plugins/with-gradle-props.js",
   ],
