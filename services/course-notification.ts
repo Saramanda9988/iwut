@@ -6,6 +6,7 @@ import {
   cancelAll,
   createChannel,
   scheduleCountdown,
+  showCountdown,
 } from "@/modules/notification";
 import { SECTION_TIMES } from "@/services/course-time";
 import { useCourseStore } from "@/store/course";
@@ -15,6 +16,7 @@ import { getCurrentWeek, getTermWeekMonday } from "@/lib/date";
 const CHANNEL_ID = "course_reminder";
 const BACKGROUND_TASK_NAME = "course-reminder-refresh";
 const SCHEDULE_WEEKS = 2;
+const LIVE_ACTIVITY_ID = 9999;
 
 TaskManager.defineTask(BACKGROUND_TASK_NAME, async () => {
   try {
@@ -47,6 +49,66 @@ export async function unregisterBackgroundRefresh(): Promise<void> {
 export async function initNotificationChannel(): Promise<void> {
   if (Platform.OS === "android") {
     await createChannel(CHANNEL_ID, "课程提醒", "在课程开始前显示倒计时通知");
+  }
+}
+
+export async function showUpcomingLiveActivity(): Promise<void> {
+  if (Platform.OS !== "ios") return;
+
+  const { courseReminder, reminderMinutes } = useSettingsStore.getState();
+  if (!courseReminder) return;
+
+  const { courses, termStart } = useCourseStore.getState();
+  if (!termStart || courses.length === 0) return;
+
+  const currentWeek = getCurrentWeek(termStart);
+  const now = Date.now();
+  const windowMs = reminderMinutes * 60 * 1000;
+
+  let nearest: { name: string; info: string; classStartMs: number } | null =
+    null;
+
+  for (const course of courses) {
+    if (currentWeek < course.weekStart || currentWeek > course.weekEnd)
+      continue;
+
+    const sectionTime = SECTION_TIMES[course.sectionStart];
+    if (!sectionTime) continue;
+
+    const [startTimeStr] = sectionTime;
+    const [startH, startM] = startTimeStr.split(":").map(Number);
+
+    const monday = getTermWeekMonday(termStart, currentWeek);
+    if (!monday) continue;
+
+    const courseDate = new Date(monday);
+    courseDate.setDate(courseDate.getDate() + course.day - 1);
+    courseDate.setHours(startH, startM, 0, 0);
+
+    const classStartMs = courseDate.getTime();
+    const triggerAtMs = classStartMs - windowMs;
+
+    if (now >= triggerAtMs && now < classStartMs) {
+      if (!nearest || classStartMs < nearest.classStartMs) {
+        nearest = {
+          name: course.name,
+          info: `${course.room} · ${startTimeStr}`,
+          classStartMs,
+        };
+      }
+    }
+  }
+
+  if (nearest) {
+    await showCountdown(
+      LIVE_ACTIVITY_ID,
+      CHANNEL_ID,
+      nearest.name,
+      nearest.info,
+      nearest.classStartMs,
+      true,
+      true,
+    );
   }
 }
 

@@ -26,7 +26,7 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useRef } from "react";
-import { Appearance, View } from "react-native";
+import { AppState, Appearance, Platform, View } from "react-native";
 import "react-native-reanimated";
 import {
   SafeAreaProvider,
@@ -40,6 +40,7 @@ import {
   initNotificationChannel,
   registerBackgroundRefresh,
   scheduleWeeklyReminders,
+  showUpcomingLiveActivity,
 } from "@/services/course-notification";
 import { syncWidgetData } from "@/services/widget-sync";
 import { useCourseStore } from "@/store/course";
@@ -85,6 +86,17 @@ function RootLayout() {
     initNotificationChannel().catch(() => {});
     scheduleWeeklyReminders().catch(() => {});
     registerBackgroundRefresh().catch(() => {});
+    showUpcomingLiveActivity().catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (Platform.OS !== "ios") return;
+    const sub = AppState.addEventListener("change", (state) => {
+      if (state === "active") {
+        showUpcomingLiveActivity().catch(() => {});
+      }
+    });
+    return () => sub.remove();
   }, []);
 
   useEffect(() => {

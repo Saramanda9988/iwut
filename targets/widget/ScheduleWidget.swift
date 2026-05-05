@@ -14,9 +14,19 @@ struct ScheduleWidget: Widget {
                     .background(Color("WidgetBackground"))
             }
         }
-        .contentMarginsDisabled()
+        .safeContentMarginsDisabled()
         .configurationDisplayName("课程表")
         .description("今天有什么课？看这里就够啦～")
         .supportedFamilies([.systemMedium])
+    }
+}
+
+extension WidgetConfiguration {
+    func safeContentMarginsDisabled() -> some WidgetConfiguration {
+        if #available(iOSApplicationExtension 17.0, *) {
+            return self.contentMarginsDisabled()
+        } else {
+            return self
+        }
     }
 }

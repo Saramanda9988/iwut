@@ -2,7 +2,8 @@
 module.exports = {
   type: "widget",
   name: "ScheduleWidget",
-  deploymentTarget: "17.0",
+  deploymentTarget: "16.2",
+  frameworks: ["ActivityKit"],
   entitlements: {
     "com.apple.security.application-groups": ["group.dev.tokenteam.iwut"],
   },

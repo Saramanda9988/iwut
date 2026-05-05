@@ -231,36 +231,34 @@ export default function SettingsScreen() {
           />
         </MenuGroup>
 
-        {Platform.OS === "android" && (
-          <MenuGroup title="通知">
-            <MenuItem
-              icon="notifications-active"
-              iconBg="#FF9500"
-              label="课前提醒"
-              showArrow={false}
-              right={
-                <Switch
-                  value={courseReminder}
-                  onValueChange={handleCourseReminderChange}
-                />
-              }
-            />
-            {courseReminder && (
-              <MenuItem
-                icon="schedule"
-                iconBg="#5856D6"
-                label="提醒时间"
-                showArrow
-                right={
-                  <Text className="text-sm text-neutral-500">
-                    提前 {reminderMinutes} 分钟
-                  </Text>
-                }
-                onPress={() => setReminderSheetVisible(true)}
+        <MenuGroup title="通知">
+          <MenuItem
+            icon="notifications-active"
+            iconBg="#FF9500"
+            label="课前提醒"
+            showArrow={false}
+            right={
+              <Switch
+                value={courseReminder}
+                onValueChange={handleCourseReminderChange}
               />
-            )}
-          </MenuGroup>
-        )}
+            }
+          />
+          {courseReminder && (
+            <MenuItem
+              icon="schedule"
+              iconBg="#5856D6"
+              label="提醒时间"
+              showArrow
+              right={
+                <Text className="text-sm text-neutral-500">
+                  提前 {reminderMinutes} 分钟
+                </Text>
+              }
+              onPress={() => setReminderSheetVisible(true)}
+            />
+          )}
+        </MenuGroup>
 
         <MenuGroup title="存储">
           <MenuItem
