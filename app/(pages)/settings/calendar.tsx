@@ -17,6 +17,16 @@ import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useCourseStore } from "@/store/course";
 import { useScheduleStore } from "@/store/schedule";
 
+function isCropCancelled(error: unknown) {
+  const re = /cancell?ed/i;
+  if (error && typeof error === "object" && "code" in error) {
+    if (re.test(String((error as { code: unknown }).code))) return true;
+  }
+  if (error instanceof Error) return re.test(error.message);
+  if (typeof error === "string") return re.test(error);
+  return false;
+}
+
 export default function CalendarSettingsScreen() {
   const { width: windowWidth, height: windowHeight } = useWindowDimensions();
   const scheme = useColorScheme();
@@ -97,7 +107,7 @@ export default function CalendarSettingsScreen() {
         position: "bottom",
       });
     } catch (error) {
-      if (error instanceof Error && error.message.includes("Crop cancelled")) return;
+      if (isCropCancelled(error)) return;
       Toast.show({
         type: "error",
         text1: "背景设置失败",
